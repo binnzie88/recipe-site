@@ -1,12 +1,12 @@
-import '../styles/App.css';
+import styles from '../styles/Footer.module.scss';
+import recipeStyles from '../styles/Recipe.module.scss';
+import classNames from 'classnames';
 
 export const Footer = () => {
   return (
-    <footer id="footer" className="no-print">
-      <div className="d-md-flex py-4">
-        <div className="mr-md-auto text-center text-md-left">
-          <div className="copyright">&copy;Copyright Emma Binns 2020. All Rights Reserved</div>
-        </div>
+    <footer className={classNames(styles.footer, recipeStyles.noPrint)}>
+      <div className={styles.footerContent}>
+        <div className={styles.copyright}>&copy;Copyright Emma Binns 2020. All Rights Reserved</div>
       </div>
     </footer>
   );

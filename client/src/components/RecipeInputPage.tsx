@@ -1,6 +1,4 @@
-import '../styles/App.css';
-import React, { useCallback, useMemo, useState } from 'react';
-import classNames from 'classnames';
+import React, { useCallback, useState } from 'react';
 import { Header } from './Header';
 import { Footer } from './Footer';
 
@@ -66,8 +64,8 @@ export const RecipeInputPage = () => {
   
   return (
     <React.Fragment>
-      <Header />
-      <main id="main">
+      <Header isScrollable={false} />
+      <main>
         <section id="suggestion" className="suggestion">
           <div className="container">
             <div className="row">

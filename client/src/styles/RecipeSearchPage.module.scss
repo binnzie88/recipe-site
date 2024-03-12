@@ -1,12 +1,325 @@
-.tagCheckboxes {
-  padding-left: 10px;
+/* ---------- Recipe Search Page ---------- */
 
-  .tagFilter {
+.recipeSearchPageTop {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+}
+
+.recipesPageBackground {
+  background: rgba(0, 0, 0, 0.6);
+  height: 100%;
+}
+
+.searchPageContainer {
+  min-height: 460px;
+  flex-grow: 1;
+
+  .recipes {
+    padding: 100px 0 30px 0;
+    max-height: 100%;
     display: flex;
-  
-    .tagFilterLabel {
-      color: black;
-      padding-left: 10px;
+
+    .searchTopContainer {
+      max-width: 1500px;
+
+      .recipesContainer {
+        display: flex;
+        height: 100%;
+      
+        .sidebarSection {
+          flex: 1;
+          margin-right: 15px;
+
+          .sidebar {
+            padding: 15px;
+            margin: 0 0 50px 0;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+            background-color: #fff;
+            max-height: 100%;
+            display: flex;
+            flex-direction: column;
+
+            .sidebarTitle {
+              font-size: 20px;
+              font-weight: 700;
+              padding: 0 0 0 0;
+              margin: 0 0 15px 0;
+              color: #493c3e;
+              position: relative;
+
+              &.sidebarTitleSm {
+                margin: 0 10px 0 0;
+                align-self: center;
+              }
+            }
+
+            .sidebarSubtitle {
+              font-size: 16px;
+              font-weight: 700;
+              margin: 0 0 10px 0;
+              padding: 0 10px 0 0;
+              color: #493c3e;
+              position: relative;
+            }
+
+            .sidebarItem {
+              margin-top: 15px;
+
+              &.d-lg-block {
+                overflow: auto;
+              }
+
+              .tagCheckboxes {
+                padding-left: 10px;
+              
+                .tagFilter {
+                  display: flex;
+                
+                  .tagFilterLabel {
+                    color: black;
+                    padding-left: 10px;
+                  }
+                }
+              }
+            }
+
+            .searchContainer {
+              display: flex;
+
+              .searchForm {
+                background: #fff;
+                border: 1px solid #d3cacb;
+                padding: 3px 10px;
+                position: relative;
+                flex-grow: 1;
+
+                input[type="text"] {
+                  border: 0;
+                  padding: 4px;
+                  width: calc(100% - 60px);
+                }
+
+                button {
+                  position: absolute;
+                  top: 0;
+                  right: -2px;
+                  bottom: 0;
+                  border: 0;
+                  font-size: 16px;
+                  padding: 0 20px;
+                  margin: -1px;
+                  background: #b18f5f;
+                  color: #fff;
+                  transition: 0.3s;
+
+                  &:hover {
+                    background: #cbac80;
+                  }
+
+                  i {
+                    height: 100%;
+                    display: flex;
+                    align-items: center;
+                  }
+                }
+              }
+
+              .filterButtonIcon {
+                vertical-align: bottom;
+              }
+            }
+
+            .filterButton {
+              background: #b18f5f;
+              color: #fff;
+              margin: 0 0 0 10px;
+              border: 0px;
+              border-radius: 0px;
+
+              &:hover, &.active {
+                background: #cbac80;
+              }
+            }
+
+            .filtersSm {
+              ul {
+                list-style: none;
+                padding: 0;
+
+                a {
+                  color: #655356;
+
+                  &:hover {
+                    color: #b18f5f;
+                  }
+                }
+
+                li + li {
+                  padding-top: 10px;
+                }
+              }
+            }
+          }
+    
+          .filterHeaderRow {
+            align-items: center;
+        
+            .tooltipAnchor {
+              position: relative;
+              display: inline-block;
+        
+              .tooltipText {
+                visibility: hidden;
+                width: 130px;
+                font-size: 12px;
+                background-color: #525252;
+                color: #ffffff;
+                text-align: center;
+                border-radius: 6px;
+                padding: 5px;
+                position: absolute;
+                z-index: 1;
+                top: 100%;
+                left: 50%;
+                margin-left: -65px;
+        
+                &.sidebarTooltip {
+                  width: 150px;
+                  margin-left: -75px;
+                }
+        
+                &::after {
+                  content: "";
+                  position: absolute;
+                  bottom: 100%;
+                  left: 50%;
+                  margin-left: -5px;
+                  border-width: 5px;
+                  border-style: solid;
+                  border-color: transparent transparent #525252 transparent;
+                }
+              }
+        
+              &:hover .tooltipText {
+                visibility: visible;
+              }
+            }
+        
+            .infoIcon {
+              color: #525252;
+              font-size: 16px;
+              margin-bottom: 10px;
+            }
+          }
+        }
+      
+        .resultsSection {
+          flex: 2;
+          margin-left: 15px;
+          overflow: auto;
+          
+          .resultsContainer {
+            margin: 0 5px;
+
+            .entryContainer {
+              width: 100%;
+
+              .entry {
+                overflow: hidden;
+                box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+                color: #525252;
+                background-color: #fff;
+                padding: 10px 0 10px 0;
+                margin-bottom: 15px;
+
+                :global(.col-2) {
+                  padding-left: 10px;
+                  padding-right: 0px;
+                }
+
+                :global(.col-10) {
+                  display: flex;
+                  flex-direction: column;
+                  padding-left: 10px;
+                }
+
+                .entryTitle {
+                  font-size: 18px;
+                  line-height: 20px;
+                  font-weight: bold;
+                  padding: 0;
+                  margin: 0 0 10px 0;
+
+                  a {
+                    color: #493c3e;
+                    transition: 0.3s;
+
+                    &:hover {
+                      color: #898390;
+                    }
+                  }
+                }
+
+                .entryContent {
+                  flex-grow: 1;
+
+                  p {
+                    line-height: 20px;
+                    font-size: 14px;
+                    margin-bottom: 5px;
+                  }
+                }
+
+                .entryCardFooter {
+                  display: flex;
+                  align-items: center;
+                  padding-top: 5px;
+                  width: 100%;
+
+                  .entryTags {
+                    flex-grow: 1;
+                  }
+
+                  .viewRecipeContainer {
+                    flex-shrink: 0;
+
+                    .viewRecipe {
+                      a {
+                        display: inline-block;
+                        background: #b18f5f;
+                        color: #fff;
+                        padding: 5px 10px 5px 10px;
+                        transition: 0.3s;
+                        font-size: 14px;
+                  
+                        &:hover {
+                          background: #cbac80;
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    
+      @media only screen and (max-width : 990px) {
+        .recipesContainer {
+          flex-direction: column;
+      
+          .sidebarSection {
+            flex: 0;
+            margin-right: 0;
+          }
+      
+          .resultsSection {
+            margin-left: 0;
+          }
+        }
+      }
     }
   }
 }

@@ -2,7 +2,8 @@ import $ from "jquery";
 import "jquery-ui-dist/jquery-ui";
 import { DietarySelection, DietarySelectionIndices, Tag } from "./types";
 import React from "react";
-import styles from "./styles/RecipeSearchPage.module.scss";
+import headerStyles from "./styles/Header.module.scss";
+import recipeSearchStyles from "./styles/RecipeSearchPage.module.scss";
 
 export function getDietaryRestrictionAndSubstitute(tag: Tag) {
   if (tag === Tag.Vegan || tag === Tag.VeganSubstitute) {
@@ -18,9 +19,9 @@ export function getDietaryRestrictionAndSubstitute(tag: Tag) {
 
 export function createTagFilter(tag: Tag, className: string, onClick: () => void, defaultChecked: boolean, buttonText: string) {
   return (
-    <li className={styles.tagFilter} key={tag}>
+    <li className={recipeSearchStyles.tagFilter} key={tag}>
       <input className={className} type="checkbox" onClick={onClick} id={tag} defaultChecked={defaultChecked} />
-      <div className={styles.tagFilterLabel}>
+      <div className={recipeSearchStyles.tagFilterLabel}>
         {buttonText}
       </div>
     </li>
@@ -57,13 +58,13 @@ export function getIngredients() {
 }
 
 export function scrollPage() {
-  const recipeContainer = document.getElementById("recipe-container");
+  const recipeContainer = document.getElementById("scroll-top-container");
   if (recipeContainer != null) {
     if ($(window).scrollTop()) {
-      $("#header").addClass("header-scrolled");
+      $("#header").addClass(headerStyles.headerScrolled);
       $(".back-to-top").fadeIn("slow");
     } else {
-      $("#header").removeClass("header-scrolled");
+      $("#header").removeClass(headerStyles.headerScrolled);
       $(".back-to-top").fadeOut("slow");
     }
   }
@@ -75,9 +76,9 @@ export function navBackToTop() {
   }, 1250, 'easeInOutExpo');
 }
 
-export function navToRecipe(e: React.MouseEvent<HTMLElement>) {
+export function smoothScrollDown(e: React.MouseEvent<HTMLElement>, targetId: string) {
   e.preventDefault();
-  var targetOffset = $("#recipe").offset();
+  var targetOffset = $(targetId).offset();
   if (targetOffset != null) {
     var scrollto = targetOffset.top;
     var scrolled = 20;
@@ -86,7 +87,7 @@ export function navToRecipe(e: React.MouseEvent<HTMLElement>) {
     var headerOuterHeight = header.outerHeight();
     if (headerOuterHeight != null) {
       scrollto -= headerOuterHeight;
-      if (!header.hasClass('header-scrolled')) {
+      if (!header.hasClass(headerStyles.headerScrolled)) {
         scrollto += scrolled;
       }
     }
@@ -95,7 +96,7 @@ export function navToRecipe(e: React.MouseEvent<HTMLElement>) {
       scrollTop: scrollto
     }, 1250, 'easeInOutExpo');
   }
-};
+}
 
 export function maybeConvertStringWithLink(item: string) {
   if (item.includes("<a href")) {

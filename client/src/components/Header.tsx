@@ -1,19 +1,21 @@
-import '../styles/App.css';
+import classNames from 'classnames';
+import sharedStyles from '../styles/CommonStyles.module.scss';
+import styles from '../styles/Header.module.scss';
 
-export const Header = () => {
+export const Header = ({ isScrollable }: { isScrollable: boolean } ) => {
   return (
-    <header id="header" className="fixed-top header-inner-pages">
-      <div className="top-container d-flex align-items-top">
-        <h1 className="logo mr-auto">
+    <header id="header" className={classNames("fixed-top", {"header-unscrollable": !isScrollable})}>
+      <div className={classNames(sharedStyles.topContainer, styles.headerContainer)}>
+        <h1 className={styles.siteName}>
           <a href="../">Recipes</a>
         </h1>
-        <nav className="navbar navbar-expand-lg">
+        <nav className={classNames("navbar", "navbar-expand-lg")}>
           <button className="navbar-toggler" type="button" data-toggle="collapse" data-target="#collapsibleNavbar">
             <span className="navbar-toggler-icon">
               <i className="material-icons">menu</i>
             </span>
           </button>
-          <div className="collapse navbar-collapse nav-menu" id="collapsibleNavbar">
+          <div className={classNames("collapse", "navbar-collapse", styles.navMenu)} id="collapsibleNavbar">
             <ul className="navbar-nav">
               <li>
                 <a href="../">Home</a>

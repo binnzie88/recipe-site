@@ -1,29 +1,31 @@
+import classNames from 'classnames';
 import React from 'react';
 import { Header } from './Header';
 import { Footer } from './Footer';
-import { navBackToTop } from '../utils';
-import '../styles/App.css';
+import sharedStyles from '../styles/CommonStyles.module.scss';
+import styles from '../styles/Home.module.scss';
+import { smoothScrollDown } from '../utils';
 
 export const Home = () => {
   // Display home page
   // TODO: clean this up, break repeat code into helper function
   return (
     <React.Fragment>
-      <Header />
-      <div className="page-container">
-        <section id="hero">
-          <div className="hero-container">
+      <Header isScrollable={true} />
+      <div className={sharedStyles.pageContainer}  id="scroll-top-container">
+        <section className={sharedStyles.hero}>
+          <div className={sharedStyles.heroContainer}>
             <h3>Welcome</h3>
             <h1>This is Just a Bunch of Recipes</h1>
             <h2>Seriously. That's all this is.</h2>
-            <a href="#about" className="btn-get-started scrollto">I'm listening...</a>
+            <a onClick={(e) => smoothScrollDown(e, "#about")} className={sharedStyles.heroButton}>I'm listening...</a>
           </div>
         </section>
 
-        <main className="home-content" id="main">
+        <main className={styles.homeContent}>
           <section id="about">
-            <div className="top-container">
-              <div className="section-title">
+            <div className={classNames(sharedStyles.topContainer, sharedStyles.expandOnSmallScreens)}>
+              <div className={styles.sectionTitle}>
                 <h2>About</h2>
                 <h3>Still Confused?</h3>
                 <p>I'm not here to tell you my life story.<br/>
@@ -35,82 +37,82 @@ export const Home = () => {
             </div>
           </section>
 
-          <section id="category" className="category">
-            <div className="top-container">
-              <div className="section-title">
+          <section className={styles.category}>
+            <div className={classNames(sharedStyles.topContainer, sharedStyles.expandOnSmallScreens)}>
+              <div className={styles.sectionTitle}>
                 <h2>Explore</h2>
                 <h3>Start exploring some recipes!</h3>
                 <p>Select a category to begin exploring recipes, or use the Recipes button at the top of the page to search for and filter recipes.</p>
               </div>
 
-              <div className="row category-container">
-                <div className="col-lg-3 col-md-4 col-sm-6 category-item filter-app">
+              <div className="row">
+                <div className={classNames(styles.categoryItem, "col-lg-3", "col-md-4", "col-sm-6")}>
                   <a href="/recipes">
                     <img src={require("./../img/lunch/chili_sq.jpeg")} className="img-fluid" alt="" />
-                    <div className="category-info">
+                    <div className={styles.categoryInfo}>
                       <h4>{"All"}</h4>
                       <p>{"Why limit yourself by arbitrary filters? Explore it all. Follow your heart."}</p>
                     </div>
                   </a>
                 </div>
-                <div className="col-lg-3 col-md-4 col-sm-6 category-item filter-app">
+                <div className={classNames(styles.categoryItem, "col-lg-3", "col-md-4", "col-sm-6")}>
                   <a href="recipes/?tag=vegetarian">
                     <img src={require("./../img/dinner/gnocchi_bake_sq.jpg")} className="img-fluid" alt="" />
-                    <div className="category-info">
+                    <div className={styles.categoryInfo}>
                       <h4>{"Vegetarian"}</h4>
                       <p>{"Meatless options that still embrace cheese and eggs as the delicious friends they are."}</p>
                     </div>
                   </a>
                 </div>
-                <div className="col-lg-3 col-md-6 col-sm-6 category-item filter-card">
+                <div className={classNames(styles.categoryItem, "col-lg-3", "col-md-4", "col-sm-6")}>
                   <a href="recipes/?tag=vegan">
                     <img src={require("./../img/dinner/yellow_curry_sq.jpeg")} className="img-fluid" alt="" />
-                    <div className="category-info">
+                    <div className={styles.categoryInfo}>
                       <h4>{"Vegan"}</h4>
                       <p>{"Good for you and the planet, what more can you ask for?"}</p>
                     </div>
                   </a>
                 </div>
-                <div className="col-lg-3 col-md-6 col-sm-6 category-item filter-card">
+                <div className={classNames(styles.categoryItem, "col-lg-3", "col-md-4", "col-sm-6")}>
                   <a href="recipes/?tag=gluten-free">
                     <img src={require("./../img/breakfast/fritatta_sq.png")} className="img-fluid" alt="" />
-                    <div className="category-info">
+                    <div className={styles.categoryInfo}>
                       <h4>{"Gluten-Free"}</h4>
                       <p>{"I'm sorry bread hates you. Hopefully these recipes provide some solace."}</p>
                     </div>
                   </a>
                 </div>
-                <div className="col-lg-3 col-md-4 col-sm-6 category-item filter-web">
+                <div className={classNames(styles.categoryItem, "col-lg-3", "col-md-4", "col-sm-6")}>
                   <a href="recipes/?tag=entree">
                     <img src={require("./../img/dinner/saag_sq.jpeg")} className="img-fluid" alt="" />
-                    <div className="category-info">
+                    <div className={styles.categoryInfo}>
                       <h4>{"Entrees"}</h4>
                       <p>{"Any meal's main event. Or just an ambitious snack."}</p>
                     </div>
                   </a>
                 </div>
-                <div className="col-lg-3 col-md-4 col-sm-6 category-item filter-app">
+                <div className={classNames(styles.categoryItem, "col-lg-3", "col-md-4", "col-sm-6")}>
                   <a href="recipes/?tag=side-snack">
                     <img src={require("./../img/breakfast/truck_stop_sq.jpg")} className="img-fluid" alt="" />
-                    <div className="category-info">
+                    <div className={styles.categoryInfo}>
                       <h4>{"Sides/Snacks"}</h4>
                       <p>{"Reliable sidekicks and little bites to get you through the day."}</p>
                     </div>
                   </a>
                 </div>
-                <div className="col-lg-3 col-md-4 col-sm-6 category-item filter-card">
+                <div className={classNames(styles.categoryItem, "col-lg-3", "col-md-4", "col-sm-6")}>
                   <a href="recipes/?tag=bread">
                     <img src={require("./../img/bread/soda_bread_sq.jpg")} className="img-fluid" alt="" />
-                    <div className="category-info">
+                    <div className={styles.categoryInfo}>
                       <h4>{"Breads"}</h4>
                       <p>{"Nothing makes you feel more like a wizard than successfully making bread. I stand by that."}</p>
                     </div>
                   </a>
                 </div>
-                <div className="col-lg-3 col-md-4 col-sm-6 category-item filter-web">
+                <div className={classNames(styles.categoryItem, "col-lg-3", "col-md-4", "col-sm-6")}>
                   <a href="recipes/?tag=dessert">
                     <img src={require("./../img/dessert/banoffee_sq.jpg")} className="img-fluid" alt="" />
-                    <div className="category-info">
+                    <div className={styles.categoryInfo}>
                       <h4>{"Desserts"}</h4>
                       <p>{"Sweet bites for any time of day."}</p>
                     </div>
@@ -120,13 +122,13 @@ export const Home = () => {
             </div>
           </section>
 
-          <section id="contact" className="contact">
-            <div className="top-container">
-              <div className="section-title">
+          <section className={styles.contact}>
+            <div className={classNames(sharedStyles.topContainer, sharedStyles.expandOnSmallScreens)}>
+              <div className={styles.sectionTitle}>
                 <h2>Contact</h2>
               </div>
-                <div className="info">
-                  <div className="email">
+                <div className={styles.info}>
+                  <div className={styles.email}>
                     <i className="material-icons">email</i>
                     <h4>Email:</h4>
                     <p>ebinns88@gmail.com</p>
@@ -138,9 +140,6 @@ export const Home = () => {
         </main>
       </div>
       <Footer />
-      <a href="#" id="back-to-top" className="back-to-top no-print" onClick={navBackToTop}>
-        <i className="material-icons">keyboard_arrow_up</i>
-      </a>
     </React.Fragment>
   );
 }

@@ -2,7 +2,8 @@ import classNames from 'classnames';
 import { useMemo, useState } from 'react';
 import { DietarySelection, DietarySelectionButtonText, Tag } from '../types';
 import { getDietarySelectionItems, getIngredients } from '../utils';
-import '../styles/App.css';
+import styles from '../styles/Recipe.module.scss';
+import sharedStyles from '../styles/CommonStyles.module.scss';
 
 export interface RecipeProps {
   title: string;
@@ -41,9 +42,11 @@ export const Recipe = ({ title, ingredients, steps, notes, image, substitutions,
   }, [notes]);
   const tagsList = useMemo(() => {
     return tags.map((tag, idx) => {
+      const maybeComma = idx < tags.length - 1 ? ",\xa0" : "";
       return (
         <li key={idx}>
           <a href={"../recipes?tag="+tag}>{tag}</a>
+          {maybeComma}
         </li>
       );
     });
@@ -54,7 +57,7 @@ export const Recipe = ({ title, ingredients, steps, notes, image, substitutions,
     return [DietarySelection.Original, ...substitutions].map((substitution) => {
       return (
         <button 
-          className={classNames(substitution, {"active": dietarySelection === substitution})}
+          className={classNames(substitution, {"selected": dietarySelection === substitution})}
           onClick={() => setDietarySelection(substitution)}
         >
           {DietarySelectionButtonText.get(substitution)}
@@ -65,19 +68,19 @@ export const Recipe = ({ title, ingredients, steps, notes, image, substitutions,
 
   // Display recipe
   return (
-    <div className="top-container">
+    <div className={classNames(sharedStyles.topContainer, sharedStyles.expandOnSmallScreens)}>
       <div className="row">
         <div className="col-xl-12">
-          <article className="entry entry-single">
-            <div className="entry-content">
+          <article className={classNames(styles.entry, styles.entrySingle)}>
+            <div className={styles.entryContent}>
               <div className="row">
-                <div className="left-column col-12 col-md-5 no-print">
+                <div className={classNames("col-12", "col-md-5", styles.noPrint)}>
                   <img src={require("../img/"+image)} alt="" className="img-fluid" />
-                  <div className="column-notes" id="recipe-notes">
+                  <div className={styles.notes}>
                     <h4>Notes:</h4>
                     {notesList}
                   </div>
-                  <div className="print-buttons">
+                  <div className={styles.printButtons}>
                     <button title="Print Recipe" onClick={() => window.print()}>
                         <i className="material-icons">print</i>
                     </button>
@@ -86,15 +89,15 @@ export const Recipe = ({ title, ingredients, steps, notes, image, substitutions,
                     </button>
                   </div>
                 </div>
-                <div className="right-column col-12 col-md-7">
-                  <div className="column-content printable" id="recipe-text">
+                <div className={classNames("col-12", "col-md-7")}>
+                  <div className={classNames(styles.mainColumnContent, styles.printable)} id="recipe-text">
                     <h2>{title}</h2>
-                    <div className="substitutions">
+                    <div>
                       {dietarySelectionButtons}
                     </div>
                     <h3>Ingredients</h3>
-                    <div className="row printable" id="ingredient-list">
-                      <div className="column col-12 printable">
+                    <div className={classNames("row", styles.printable)} id="ingredient-list">
+                      <div className={classNames("column", "col-12", styles.printable)}>
                         <ul>
                           {ingredientsList}
                         </ul>
@@ -105,14 +108,14 @@ export const Recipe = ({ title, ingredients, steps, notes, image, substitutions,
                         {stepsList}
                       </ol>
                   </div>
-                  <div className="column-notes print-only" id="notes">
+                  <div className={styles.printOnly}>
                     <h3>Notes:</h3>
                     {notesList}
                   </div>
-                  <div className="entry-footer">
-                    <div className="float-left">
+                  <div className={classNames(sharedStyles.entryFooter, styles.recipeFooter)}>
+                    <div className={sharedStyles.tagsContainer}>
                       <i className="material-icons">local_offer</i>
-                      <ul className="tags">
+                      <ul className={sharedStyles.tags}>
                         {tagsList}
                       </ul>
                     </div>

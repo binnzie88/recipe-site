@@ -1,0 +1,148 @@
+/* ------------- Full Recipe Page ------------- */
+
+.recipe {
+  background: rgba(0, 0, 0, 0.6);
+  padding: 40px 0 20px 0;
+
+  .entry {
+    background-color: #fff;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+    color: #525252;
+    margin-bottom: 100px;
+    overflow: hidden;
+
+    .entryContent {
+      button {
+        border: 1px solid #ede9e9;
+        color: #8e767a;
+        display: inline-block;
+        font-size: 14px;
+        margin: 0 6px 8px 0;
+        outline: none;
+        padding: 6px 14px;
+        transition: 0.3s;
+      }
+
+      button:hover {
+        background: #b18f5f;
+        border: 1px solid #b18f5f;
+        color: #fff;
+      }
+
+      button:global(.selected) {
+        background: #b18f5f;
+        border: 1px solid #b18f5f;
+        color: #fff;
+      }
+
+      .mainColumnContent {
+        padding-bottom: 45px;
+      }
+  
+      .notes {
+        font-size: 14px;
+        font-style: italic;
+        margin: 10px 0px 50px 10px;
+        padding: 10px;
+      }
+
+      :global(.col-12), :global(.col-md-5) {
+        padding: 0;
+      }
+
+      :global(.col-md-7) {
+        padding: 10px;
+      }
+
+      h3 {
+        font-size: 20px;
+        font-weight: bold;
+        margin-top: 15px;
+      }
+
+      .printButtons {
+        bottom: 0px;
+        position: absolute;
+
+        button {
+          margin: 0 0 10px 10px;
+          padding: 5px 5px 0px 5px;
+        }
+      }
+
+      .recipeFooter {
+        border-top: 1px solid #e6e6e6;
+        bottom: 0;
+        margin-top: 30px;
+        padding-bottom: 10px;
+        padding-top: 10px;
+        position: absolute;
+        width: 100%;
+      }
+    }
+  }
+}
+
+/* ---------- Back to Top button ---------- */
+
+:global(.back-to-top) {
+  position: fixed;
+  display: none;
+  right: 15px;
+  bottom: 15px;
+  z-index: 99999;
+  transition: 0.25s;
+
+  &:hover {
+    bottom: 20px;
+  }
+
+  i {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    width: 40px;
+    height: 40px;
+    border-style: solid;
+    border-color: #cbac80;
+    color: #fff;
+    transition: all 0.25s;
+  }
+}
+
+/* ---------- Recipe Printing ---------- */
+
+@media print {
+  .noPrint {
+    display: none;
+    visibility: hidden;
+  }
+
+  div:not(.printable):not(.printOnly) {
+    visibility: hidden;
+  }
+
+  .printable {
+    visibility: visible;
+    color: #000000;
+  }
+
+  .printOnly {
+    display: block;
+    visibility: visible;
+    color: #000000;
+    font-style: normal;
+  }
+
+  :global(.col-md-7), :global(.col-md-6) {
+    min-width: 100%;
+    width: 100%;
+  }
+}
+
+@media not print {
+  .printOnly {
+    display: none;
+  }
+}
