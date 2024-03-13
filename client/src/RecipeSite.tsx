@@ -17,7 +17,7 @@ export default function RecipeSite() {
         <Route path="recipes/*" element={<RecipeSearchPage />} />
         <Route path="recipe/*" element={<RecipePage />} />
         <Route path="recipe-input.html" element={<RecipeInputPage />} />
-        <Route path="*" element={<div>{"Page Not Found"}</div>} />
+        <Route path="*" element={<Home />} />
       </Routes>
     </BrowserRouter>
   );
