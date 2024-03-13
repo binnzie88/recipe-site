@@ -1,4 +1,3 @@
-import { API } from 'aws-amplify';
 import axios from 'axios';
 import React, { useEffect, useState } from 'react';
 import { useLocation } from 'react-router-dom';
@@ -22,24 +21,6 @@ export const RecipePage = () => {
     return (<div>{'Could not find recipe "' + recipeId + '", please try another recipe.'}</div>)
   }
   useEffect(() => {
-    try {
-      API.get({
-        apiName: 'recipesApi',
-        path: '/api/recipe/'+recipeId
-      }).then((response) => {
-        console.log("IN THE CALL");
-        console.log(response);
-        if (response.data.error != null) {
-          // TODO: show error page
-          console.log("ERROR");
-          console.log(response.data.error);
-        } else {
-          setRecipe(response.data.recipe[0] as RecipeEntry);
-        }
-      })
-    } catch (e) {
-      console.log("API call failed: "+e);
-    }
     axios.get('http://localhost:9000/recipe/'+recipeId).then((response) => {
       console.log("IN THE CALL");
       console.log(response);
