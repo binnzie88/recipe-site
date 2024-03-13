@@ -1,4 +1,4 @@
-import { HashRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { Home } from "./components/Home";
 import { RecipePage } from './components/RecipePage';
 import { scrollPage } from "./utils";
@@ -11,7 +11,7 @@ export default function RecipeSite() {
   window.addEventListener('scroll', scrollPage);
 
   return (
-    <HashRouter>
+    <BrowserRouter>
       <Routes>
         <Route index element={<Home />} />
         <Route path="recipes/*" element={<RecipeSearchPage />} />
@@ -19,6 +19,6 @@ export default function RecipeSite() {
         <Route path="recipe-input.html" element={<RecipeInputPage />} />
         <Route path="*" element={<Home />} />
       </Routes>
-    </HashRouter>
+    </BrowserRouter>
   );
 }
