@@ -39,6 +39,7 @@
   },
   "devDependencies": {
     "@types/jquery": "^3.5.29",
+    "aws-amplify": "^6.0.20",
     "sass": "^1.71.1"
   }
 }
