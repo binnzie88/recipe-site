@@ -1,9 +1,11 @@
 import $ from "jquery";
 import "jquery-ui-dist/jquery-ui";
-import { DietarySelection, DietarySelectionIndices, Tag } from "./types";
+import { DietarySelection, Tag } from "./types";
 import React from "react";
 import headerStyles from "./styles/Header.module.scss";
 import recipeSearchStyles from "./styles/RecipeSearchPage.module.scss";
+import { LoadingRecipeCard } from "./components/LoadingRecipeCard";
+import { DietarySelectionIndices } from "./consts";
 
 export function getDietaryRestrictionAndSubstitute(tag: Tag) {
   if (tag === Tag.Vegan || tag === Tag.VeganSubstitute) {
@@ -186,4 +188,19 @@ export function getDietarySelectionItems(rawItems: string[][], substitutions: Di
   });
 
   return itemsByDietarySelection;
+}
+
+export function getLoadingRecipeCards() {
+  return [
+    <LoadingRecipeCard />,
+    <LoadingRecipeCard />,
+    <LoadingRecipeCard />,
+    <LoadingRecipeCard />,
+    <LoadingRecipeCard />,
+    <LoadingRecipeCard />,
+    <LoadingRecipeCard />,
+    <LoadingRecipeCard />,
+    <LoadingRecipeCard />,
+    <LoadingRecipeCard />,
+  ];
 }

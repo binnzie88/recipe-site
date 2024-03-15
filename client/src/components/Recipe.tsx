@@ -1,9 +1,10 @@
 import classNames from 'classnames';
 import { useMemo, useState } from 'react';
-import { DietarySelection, DietarySelectionButtonText, Tag } from '../types';
+import { DietarySelection, Tag } from '../types';
 import { getDietarySelectionItems, getIngredients } from '../utils';
 import styles from '../styles/Recipe.module.scss';
 import sharedStyles from '../styles/CommonStyles.module.scss';
+import { DietarySelectionButtonText } from '../consts';
 
 export interface RecipeProps {
   title: string;

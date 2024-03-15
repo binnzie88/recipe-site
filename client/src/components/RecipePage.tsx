@@ -4,39 +4,48 @@ import { useLocation } from 'react-router-dom';
 import { Header } from './Header';
 import { Footer } from './Footer';
 import { Recipe } from './Recipe';
-import { DietarySelections, RecipeEntry, Tag } from '../types';
+import { RecipeEntry, Tag } from '../types';
 import { navBackToTop, smoothScrollDown } from '../utils';
 import sharedStyles from '../styles/CommonStyles.module.scss';
 import styles from '../styles/Recipe.module.scss';
 import classNames from 'classnames';
+import { DietarySelections, loadingRecipe } from '../consts';
+import { RecipeErrorPage } from './RecipeErrorPage';
 
 export const RecipePage = () => {
-  const [recipe, setRecipe] = useState<RecipeEntry>();
+  const [recipe, setRecipe] = useState<RecipeEntry | undefined>(loadingRecipe);
+  const [recipeError, setRecipeError] = useState<JSX.Element>(<h2>{"We could not load the recipe, please try again later."}</h2>);
 
   // Get recipe from the server
   const location = useLocation();
-  const recipeId = location.pathname.split("/")[2];
+  const recipeId = location.pathname.split("/")[2] ?? "";
+  console.log(recipeId);
   if (recipeId.length < 1) {
-    // TODO: show better error page
-    return (<div>{'Could not find recipe "' + recipeId + '", please try another recipe.'}</div>)
+    return (<RecipeErrorPage errorContent={<h2>{"Select a recipe "}<a href="../recipes/">{"here"}</a></h2>} />);
   }
   useEffect(() => {
-    axios.get('https://just-a-bunch-of-recipes-8963b08b5337.herokuapp.com/api/recipe/'+recipeId).then((response) => {
-      console.log("IN THE CALL");
-      console.log(response);
+    axios.get('https://www.justabunchofrecipes.com/api/recipe/'+recipeId).then((response) => {
       if (response.data.error != null) {
-        // TODO: show error page
-        console.log("ERROR");
+        console.log("Error received from database:");
         console.log(response.data.error);
+        setRecipeError(<h2>{"We are experiencing technical difficulties. Please try again later."}</h2>);
+        setRecipe(undefined);
+      } else if (response.data.recipe.length == 0) {
+        setRecipeError(<h2>{"We could not find a "+recipeId+" recipe, please try a different recipe."}</h2>);
+        setRecipe(undefined);
       } else {
         setRecipe(response.data.recipe[0] as RecipeEntry);
       }
+    }).catch((e) => {
+      console.log("Error connecting to database:");
+      console.log(e);
+      setRecipeError(<h2>{"We could not load the "+recipeId+" recipe, please try again later."}</h2>);
+      setRecipe(undefined);
     });
-  }, []);
+  }, [recipeId]);
 
   if (recipe == null) {
-    // TODO: show better loading page
-    return (<div>Loading...</div>);
+    return (<RecipeErrorPage errorContent={recipeError} />);
   } else {
     const {title, subtitle, time, image, ingredients, steps, notes, tags} = recipe;
     const substitutions = DietarySelections.filter((tag) => tags.includes(tag));
