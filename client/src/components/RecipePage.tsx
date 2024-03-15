@@ -14,14 +14,18 @@ import { RecipeErrorPage } from './RecipeErrorPage';
 
 export const RecipePage = () => {
   const [recipe, setRecipe] = useState<RecipeEntry | undefined>(loadingRecipe);
-  const [recipeError, setRecipeError] = useState<JSX.Element>(<h2>{"We could not load the recipe, please try again later."}</h2>);
+  const [recipeError, setRecipeError] = useState<JSX.Element>(
+    <h2>{"We could not load the recipe, please try again later."}</h2>
+  );
 
   // Get recipe from the server
   const location = useLocation();
   const recipeId = location.pathname.split("/")[2] ?? "";
   console.log(recipeId);
   if (recipeId.length < 1) {
-    return (<RecipeErrorPage errorContent={<h2>{"Select a recipe "}<a href="../recipes/">{"here"}</a></h2>} />);
+    return (
+      <RecipeErrorPage errorContent={<h2>{"Select a recipe "}<a href="../recipes/">{"here"}</a></h2>} />
+    );
   }
   useEffect(() => {
     axios.get('https://www.justabunchofrecipes.com/api/recipe/'+recipeId).then((response) => {
@@ -62,12 +66,20 @@ export const RecipePage = () => {
               </h3>
               <h1>{title}</h1>
               <h2>{subtitle}</h2>
-              <a onClick={(e) => smoothScrollDown(e, "#recipe")} className={sharedStyles.heroButton}>Get Started</a>
+              <a onClick={(e) => smoothScrollDown(e, "#recipe")} className={sharedStyles.heroButton}>{"Get Started"}</a>
             </div>
           </section>
           <main>
             <section id="recipe" className={styles.recipe}>
-              <Recipe title={title} ingredients={ingredients} steps={steps} notes={notes} image={image} substitutions={substitutions} tags={tags as Tag[]} />
+              <Recipe
+                title={title}
+                ingredients={ingredients}
+                steps={steps}
+                notes={notes}
+                image={image}
+                substitutions={substitutions}
+                tags={tags as Tag[]}
+              />
             </section>
           </main>
         </div>

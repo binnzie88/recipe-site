@@ -68,7 +68,12 @@ export const RecipeSearchPage = () => {
   // Filter recipes by selected tags and search term
   const filteredRecipes = useMemo(() => {
     return recipes == null ? undefined : recipes.filter((recipe) => {
-      const matchesSelectedTags = isRecipeVisibleWithSelectedTags(recipe.tags, selectedDietaryTags, selectedDifficultyTags, selectedCategoryTags);
+      const matchesSelectedTags = isRecipeVisibleWithSelectedTags(
+        recipe.tags,
+        selectedDietaryTags,
+        selectedDifficultyTags,
+        selectedCategoryTags
+      );
       const matchesSearchTerm = 
         searchTerm.trimEnd() === ""
         || recipe.title.toLowerCase().includes(searchTerm.toLowerCase())
@@ -94,9 +99,19 @@ export const RecipeSearchPage = () => {
       <main className={classNames(sharedStyles.pageContainer, styles.searchPageContainer)}>
         <div className={styles.recipesPageBackground}>
         <section className={styles.recipes}>
-          <div className={classNames(sharedStyles.topContainer, sharedStyles.expandOnSmallScreens, styles.searchTopContainer)}>
+          <div className={classNames(
+            sharedStyles.topContainer,
+            sharedStyles.expandOnSmallScreens,
+            styles.searchTopContainer
+          )}>
             <div className={styles.recipesContainer}>
-              <RecipeSearchFilters updateSearchTermCallback={updateSearchTerm} urlTags={urlTags} setSelectedDietaryTagsCallback={setSelectedDietaryTags} setSelectedDifficultyTagsCallback={setSelectedDifficultyTags} setSelectedCategoryTagsCallback={setSelectedCategoryTags} />
+              <RecipeSearchFilters
+                updateSearchTermCallback={updateSearchTerm}
+                urlTags={urlTags}
+                setSelectedDietaryTagsCallback={setSelectedDietaryTags}
+                setSelectedDifficultyTagsCallback={setSelectedDifficultyTags}
+                setSelectedCategoryTagsCallback={setSelectedCategoryTags}
+              />
               <div className={styles.resultsSection}>
                 <div className={styles.resultsContainer}>
                   {recipeCards}

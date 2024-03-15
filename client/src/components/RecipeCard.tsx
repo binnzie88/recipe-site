@@ -15,7 +15,9 @@ export const RecipeCard = ({ recipe }: { recipe: RecipeEntry }) => {
     <div className={classNames(styles.entryContainer, "col-med-12")}>
       <article className={classNames(styles.entry, "row")}>
         <div className="col-2">
-          <a href={recipeUrl}><img src={require("./../img/" + imageSplit[0] + "_sq." + imageSplit[1])} alt="" className="img-fluid" /></a>
+          <a href={recipeUrl}>
+            <img src={require("./../img/" + imageSplit[0] + "_sq." + imageSplit[1])} alt="" className="img-fluid" />
+          </a>
         </div>
         <div className="col-10">
           <h2 className={styles.entryTitle}>

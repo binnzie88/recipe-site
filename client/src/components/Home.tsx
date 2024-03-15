@@ -8,14 +8,54 @@ import { smoothScrollDown } from '../utils';
 
 export const Home = () => {
   // Build category cards
-  const allCard = buildCategoryCard("/recipes", <img src={require("./../img/lunch/chili_sq.jpeg")} className="img-fluid" alt="" />, "All", "Why limit yourself by arbitrary filters? Explore it all. Follow your heart.");
-  const vegetarianCard = buildCategoryCard("recipes/?tag=vegetarian", <img src={require("./../img/dinner/gnocchi_bake_sq.jpg")} className="img-fluid" alt="" />, "Vegetarian", "Meatless options that still embrace cheese and eggs as the delicious friends they are.");
-  const veganCard = buildCategoryCard("recipes/?tag=vegan", <img src={require("./../img/dinner/yellow_curry_sq.jpeg")} className="img-fluid" alt="" />, "Vegan", "Good for you and the planet, what more can you ask for?");
-  const glutenCard = buildCategoryCard("recipes/?tag=gluten-free", <img src={require("./../img/breakfast/fritatta_sq.png")} className="img-fluid" alt="" />, "Gluten-Free", "I'm sorry bread hates you. Hopefully these recipes provide some solace.");
-  const entreeCard = buildCategoryCard("recipes/?tag=entree", <img src={require("./../img/dinner/saag_sq.jpeg")} className="img-fluid" alt="" />, "Entrees", "Any meal's main event. Or just an ambitious snack.");
-  const sideCard = buildCategoryCard("recipes/?tag=side-snack", <img src={require("./../img/breakfast/truck_stop_sq.jpg")} className="img-fluid" alt="" />, "Sides/Snacks", "Reliable sidekicks and little bites to get you through the day.");
-  const breadCard = buildCategoryCard("recipes/?tag=bread", <img src={require("./../img/bread/soda_bread_sq.jpg")} className="img-fluid" alt="" />, "Breads", "Nothing makes you feel more like a wizard than successfully making bread. I stand by that.");
-  const dessertCard = buildCategoryCard("recipes/?tag=dessert", <img src={require("./../img/dessert/banoffee_sq.jpg")} className="img-fluid" alt="" />, "Desserts", "Sweet bites for any time of day.");
+  const allCard = buildCategoryCard(
+    "/recipes",
+    <img src={require("./../img/lunch/chili_sq.jpeg")} className="img-fluid" alt="" />,
+    "All",
+    "Why limit yourself by arbitrary filters? Explore it all. Follow your heart."
+  );
+  const vegetarianCard = buildCategoryCard(
+    "recipes/?tag=vegetarian",
+    <img src={require("./../img/dinner/gnocchi_bake_sq.jpg")} className="img-fluid" alt="" />,
+    "Vegetarian",
+    "Meatless options that still embrace cheese and eggs as the delicious friends they are."
+  );
+  const veganCard = buildCategoryCard(
+    "recipes/?tag=vegan",
+    <img src={require("./../img/dinner/yellow_curry_sq.jpeg")} className="img-fluid" alt="" />,
+    "Vegan",
+    "Good for you and the planet, what more can you ask for?"
+  );
+  const glutenCard = buildCategoryCard(
+    "recipes/?tag=gluten-free",
+    <img src={require("./../img/breakfast/fritatta_sq.png")} className="img-fluid" alt="" />,
+    "Gluten-Free",
+    "I'm sorry bread hates you. Hopefully these recipes provide some solace."
+  );
+  const entreeCard = buildCategoryCard(
+    "recipes/?tag=entree",
+    <img src={require("./../img/dinner/saag_sq.jpeg")} className="img-fluid" alt="" />,
+    "Entrees",
+    "Any meal's main event. Or just an ambitious snack."
+  );
+  const sideCard = buildCategoryCard(
+    "recipes/?tag=side-snack",
+    <img src={require("./../img/breakfast/truck_stop_sq.jpg")} className="img-fluid" alt="" />,
+    "Sides/Snacks",
+    "Reliable sidekicks and little bites to get you through the day."
+  );
+  const breadCard = buildCategoryCard(
+    "recipes/?tag=bread",
+    <img src={require("./../img/bread/soda_bread_sq.jpg")} className="img-fluid" alt="" />,
+    "Breads",
+    "Nothing makes you feel more like a wizard than successfully making bread. I stand by that."
+  );
+  const dessertCard = buildCategoryCard(
+    "recipes/?tag=dessert",
+    <img src={require("./../img/dessert/banoffee_sq.jpg")} className="img-fluid" alt="" />,
+    "Desserts",
+    "Sweet bites for any time of day."
+  );
 
   // Display home page
   return (
@@ -27,7 +67,9 @@ export const Home = () => {
             <h3>{"Welcome"}</h3>
             <h1>{"This is Just a Bunch of Recipes"}</h1>
             <h2>{"Seriously. That's all this is."}</h2>
-            <a onClick={(e) => smoothScrollDown(e, "#about")} className={sharedStyles.heroButton}>{"I'm listening..."}</a>
+            <a onClick={(e) => smoothScrollDown(e, "#about")} className={sharedStyles.heroButton}>
+              {"I'm listening..."}
+            </a>
           </div>
         </section>
 

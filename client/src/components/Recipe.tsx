@@ -78,7 +78,7 @@ export const Recipe = ({ title, ingredients, steps, notes, image, substitutions,
                 <div className={classNames("col-12", "col-md-5", styles.noPrint)}>
                   <img src={require("../img/"+image)} alt="" className="img-fluid" />
                   <div className={styles.notes}>
-                    <h4>Notes:</h4>
+                    <h4>{"Notes:"}</h4>
                     {notesList}
                   </div>
                   <div className={styles.printButtons}>
@@ -96,7 +96,7 @@ export const Recipe = ({ title, ingredients, steps, notes, image, substitutions,
                     <div>
                       {dietarySelectionButtons}
                     </div>
-                    <h3>Ingredients</h3>
+                    <h3>{"Ingredients"}</h3>
                     <div className={classNames("row", styles.printable)} id="ingredient-list">
                       <div className={classNames("column", "col-12", styles.printable)}>
                         <ul>
@@ -104,13 +104,13 @@ export const Recipe = ({ title, ingredients, steps, notes, image, substitutions,
                         </ul>
                       </div>
                     </div>
-                      <h3>Steps</h3>
+                      <h3>{"Steps"}</h3>
                       <ol>
                         {stepsList}
                       </ol>
                   </div>
                   <div className={styles.printOnly}>
-                    <h3>Notes:</h3>
+                    <h3>{"Notes:"}</h3>
                     {notesList}
                   </div>
                   <div className={classNames(sharedStyles.entryFooter, styles.recipeFooter)}>

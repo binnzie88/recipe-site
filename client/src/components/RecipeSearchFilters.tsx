@@ -13,11 +13,23 @@ export interface RecipeSearchFiltersProps {
   setSelectedCategoryTagsCallback: Dispatch<SetStateAction<Tag[]>>
 }
 
-export const RecipeSearchFilters = ({updateSearchTermCallback, urlTags, setSelectedDietaryTagsCallback, setSelectedDifficultyTagsCallback, setSelectedCategoryTagsCallback}: RecipeSearchFiltersProps) => {
+export const RecipeSearchFilters = ({
+  updateSearchTermCallback,
+  urlTags,
+  setSelectedDietaryTagsCallback,
+  setSelectedDifficultyTagsCallback,
+  setSelectedCategoryTagsCallback
+}: RecipeSearchFiltersProps) => {
   // Build filter checkboxes (for both wide and narrow screens)
-  const [dietaryTagChecks, dietaryTagChecksSmall] = useMemo(() => buildDietaryTagChecks(urlTags, setSelectedDietaryTagsCallback), [urlTags, setSelectedDietaryTagsCallback]);
-  const [difficultyTagChecks, difficultyTagChecksSmall] = useMemo(() => buildDifficultyTagChecks(urlTags, setSelectedDifficultyTagsCallback), [urlTags, setSelectedDifficultyTagsCallback]);
-  const [categoryTagChecks, categoryTagChecksSmall] = useMemo(() => buildCategoryTagChecks(urlTags, setSelectedCategoryTagsCallback), [urlTags, setSelectedCategoryTagsCallback]);
+  const [dietaryTagChecks, dietaryTagChecksSmall] = useMemo(
+    () => buildDietaryTagChecks(urlTags, setSelectedDietaryTagsCallback),
+    [urlTags, setSelectedDietaryTagsCallback]);
+  const [difficultyTagChecks, difficultyTagChecksSmall] = useMemo(
+    () => buildDifficultyTagChecks(urlTags, setSelectedDifficultyTagsCallback),
+    [urlTags, setSelectedDifficultyTagsCallback]);
+  const [categoryTagChecks, categoryTagChecksSmall] = useMemo(
+    () => buildCategoryTagChecks(urlTags, setSelectedCategoryTagsCallback),
+    [urlTags, setSelectedCategoryTagsCallback]);
 
   const dietaryTagsTooltip = (
     <span className={styles.tooltipText}>
@@ -35,9 +47,24 @@ export const RecipeSearchFilters = ({updateSearchTermCallback, urlTags, setSelec
     </span>
   );
 
-  const [dietarySection, dietarySectionSmall] = buildChecksSections("Dietary Restrictions", dietaryTagsTooltip, dietaryTagChecks, dietaryTagChecksSmall);
-  const [difficultySection, difficultySectionSmall] = buildChecksSections("Difficulty", difficultyTagsTooltip, difficultyTagChecks, difficultyTagChecksSmall);
-  const [categorySection, categorySectionSmall] = buildChecksSections("Other", categoryTagsTooltip, categoryTagChecks, categoryTagChecksSmall);
+  const [dietarySection, dietarySectionSmall] = buildChecksSections(
+    "Dietary Restrictions",
+    dietaryTagsTooltip,
+    dietaryTagChecks,
+    dietaryTagChecksSmall
+  );
+  const [difficultySection, difficultySectionSmall] = buildChecksSections(
+    "Difficulty",
+    difficultyTagsTooltip,
+    difficultyTagChecks,
+    difficultyTagChecksSmall
+  );
+  const [categorySection, categorySectionSmall] = buildChecksSections(
+    "Other",
+    categoryTagsTooltip,
+    categoryTagChecks,
+    categoryTagChecksSmall
+  );
 
   return (
     <div className={styles.sidebarSection}>
@@ -49,7 +76,12 @@ export const RecipeSearchFilters = ({updateSearchTermCallback, urlTags, setSelec
             <input type="text" id="searchInput" />
             <button type="submit" onClick={updateSearchTermCallback}><i className="material-icons">search</i></button>
           </div>
-          <button type="button" data-toggle="collapse" data-target="#filters-collapsed" className={classNames(styles.filterButton, "d-lg-none", "btn", "btn-primary")}>
+          <button
+            type="button"
+            data-toggle="collapse"
+            data-target="#filters-collapsed"
+            className={classNames(styles.filterButton, "d-lg-none", "btn", "btn-primary")}
+          >
             {"Filters"}
             <i className={classNames("material-icons", styles.filterButtonIcon)}>keyboard_arrow_down</i>
           </button>
@@ -72,7 +104,12 @@ export const RecipeSearchFilters = ({updateSearchTermCallback, urlTags, setSelec
   );
 }
 
-function buildChecksSections(sectionTitle: string, tooltip: JSX.Element, tagChecks: JSX.Element[], tagChecksSmall: JSX.Element[]) {
+function buildChecksSections(
+  sectionTitle: string,
+  tooltip: JSX.Element,
+  tagChecks: JSX.Element[],
+  tagChecksSmall: JSX.Element[]
+) {
   const checksSection = (
     <React.Fragment>
       <div className={classNames("row", styles.filterHeaderRow)}>
@@ -106,7 +143,10 @@ function buildChecksSections(sectionTitle: string, tooltip: JSX.Element, tagChec
   return [checksSection, checksSectionSmall];
 }
 
-function buildDietaryTagChecks(urlTags: string[], setSelectedDietaryTagsCallback: Dispatch<SetStateAction<Tag[]>>) {
+function buildDietaryTagChecks(
+  urlTags: string[],
+  setSelectedDietaryTagsCallback: Dispatch<SetStateAction<Tag[]>>
+) {
   const dietaryTagChecks = DietaryFilterTags.map((tag) =>
     createTagFilter(
       tag,
@@ -128,7 +168,10 @@ function buildDietaryTagChecks(urlTags: string[], setSelectedDietaryTagsCallback
   return [dietaryTagChecks, dietaryTagChecksSmall];
 }
 
-function buildDifficultyTagChecks(urlTags: string[], setSelectedDifficultyTagsCallback: Dispatch<SetStateAction<Tag[]>>) {
+function buildDifficultyTagChecks(
+  urlTags: string[],
+  setSelectedDifficultyTagsCallback: Dispatch<SetStateAction<Tag[]>>
+) {
   const difficultyTagChecks = DifficultyTags.map((tag) =>
     createTagFilter(
       tag,
@@ -151,7 +194,10 @@ function buildDifficultyTagChecks(urlTags: string[], setSelectedDifficultyTagsCa
   return [difficultyTagChecks, difficultyTagChecksSmall];
 }
 
-function buildCategoryTagChecks(urlTags: string[], setSelectedCategoryTagsCallback: Dispatch<SetStateAction<Tag[]>>) {
+function buildCategoryTagChecks(
+  urlTags: string[],
+  setSelectedCategoryTagsCallback: Dispatch<SetStateAction<Tag[]>>
+) {
   const categoryTagChecks = CategoryTags.map((tag) =>
     createTagFilter(
       tag,
