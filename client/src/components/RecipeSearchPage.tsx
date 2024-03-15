@@ -34,7 +34,7 @@ export const RecipeSearchPage = () => {
 
   // Get recipes from the server
   useEffect(() => {
-    axios.get('http://localhost:9000/recipes').then((response) => {
+    axios.get('https://just-a-bunch-of-recipes-8963b08b5337.herokuapp.com/api/recipes').then((response) => {
       if (response.data.error != null) {
         // TODO: show reasonable error page
       } else {

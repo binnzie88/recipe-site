@@ -21,7 +21,7 @@ export const RecipePage = () => {
     return (<div>{'Could not find recipe "' + recipeId + '", please try another recipe.'}</div>)
   }
   useEffect(() => {
-    axios.get('http://localhost:9000/recipe/'+recipeId).then((response) => {
+    axios.get('https://just-a-bunch-of-recipes-8963b08b5337.herokuapp.com/api/recipe/'+recipeId).then((response) => {
       console.log("IN THE CALL");
       console.log(response);
       if (response.data.error != null) {

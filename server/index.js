@@ -1,7 +1,8 @@
 const express = require('express');
 var app = express();
-const port = 9000;
+const port = process.env.PORT || 5000;
 const cors = require('cors');
+const path = require('path');
 
 var mysql = require('mysql2');
 require('dotenv').config();
@@ -25,12 +26,13 @@ connection.connect(function(err) {
 app.use(express.json());
 app.use(cors());
 app.use(express.urlencoded({ extended: false }));
+app.use(express.static(path.join(__dirname, 'build')));
 
-app.get("/", (req, res) => {
+app.get("/api/", (req, res) => {
   res.json({ message: "You've reached the server!" });
 });
 
-app.get("/recipes/", (req, res) => {
+app.get("/api/recipes/", (req, res) => {
   const query = 'SELECT * FROM recipes.RecipeTable';
   connection.query(query, (error, results) => {
     if (error) {
@@ -43,7 +45,7 @@ app.get("/recipes/", (req, res) => {
   });
 });
 
-app.get("/recipe/*", (req, res) => {
+app.get("/api/recipe/*", (req, res) => {
   const query = 'SELECT * FROM recipes.RecipeTable WHERE id="'+req.params[0]+'"';
   console.log(query);
   connection.query(query, (error, results) => {
@@ -55,6 +57,10 @@ app.get("/recipe/*", (req, res) => {
       res.json({ recipe: results });
     }
   });
+});
+
+app.get('/*', (req, res) => {
+  res.sendFile(path.join(__dirname, 'build', 'index.html'));
 });
 
 app.listen(port, () => {
