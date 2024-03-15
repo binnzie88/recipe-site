@@ -51,7 +51,7 @@ export const Recipe = ({ title, ingredients, steps, notes, image, substitutions,
         </li>
       );
     });
-  }, []);
+  }, [tags]);
 
   // Build buttons to switch dietary selection
   const dietarySelectionButtons = useMemo(() => {
