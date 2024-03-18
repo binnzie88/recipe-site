@@ -34,8 +34,6 @@ export const TagButtonText = new Map<Tag, string>([
   [Tag.Easy, "Easy"],
   [Tag.Intermediate, "Intermediate"],
   [Tag.Difficult, "Difficult"],
-  [Tag.Hot, "Hot"],
-  [Tag.Cold, "Cold"],
   [Tag.Entree, "Entrees"],
   [Tag.SideSnack, "Sides/Snacks"],
   [Tag.Dessert, "Desserts"],
@@ -44,8 +42,6 @@ export const TagButtonText = new Map<Tag, string>([
 ]);
 
 export const CategoryTags = [
-  Tag.Hot,
-  Tag.Cold,
   Tag.Entree,
   Tag.SideSnack,
   Tag.Dessert,

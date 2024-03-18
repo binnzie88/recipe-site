@@ -33,8 +33,6 @@ export enum Tag {
   Easy = "easy",
   Intermediate = "intermediate",
   Difficult = "difficult",
-  Hot = "hot",
-  Cold = "cold",
   Entree = "entree",
   SideSnack = "side-snack",
   Dessert = "dessert",
