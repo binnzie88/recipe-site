@@ -1,117 +1,256 @@
 /* ---------- Recipe Input Page ---------- */
-// TODO: fix this up once input page works
 
-.suggestion {
-  padding: 100px 0 30px 0;
-  min-height: 750px;
-  height: calc(100vh - 70px);
-}
+.inputPageTop {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
 
-.recipe-form-container {
-  padding: 15px 0 15px 0;
-  margin: 0 0 50px 0;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
-  background-color: #ecd9be;
-  color: #525252;
-  min-height: 300px;
-  max-height: calc(100vh - 250px);
-  overflow: auto;
-}
+  .submitOverlay {
+    position: fixed;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0,0,0,0.5);
+    z-index: 2;
+  
+    .submitOverlayContent {
+      background-color: #ecd9be;
+      color: #525252;
+      display: flex;
+      flex-direction: column;
+      max-width: calc(65vw);
+      max-height: calc(60vh);
+      padding: 40px;
+  
+      .overlayTextArea {
+        background-color: #e9cea7;
+        overflow-x: auto;
+        text-wrap: nowrap;
+        padding: 10px 15px 15px 15px;
+        margin-bottom: 20px;
+        flex-grow: 1;
+  
+        .recipeField {
+          margin-left: 10px;
+        }
+      }
+  
+      .overlayButtonGroup {
+        display: flex;
+        align-self: flex-end;
+  
+        button {
+          font-size: 16px;
+          padding: 5px 10px;
+  
+          &.closeButton {
+            background: #871616;
+            margin-left: 10px;
+  
+            &:hover {
+              background: #818181;
+            }
+          }
+        }
+      }
+    }
+  }
 
-.recipe-form-container p {
-  margin: 10px 30px 20px 30px;
-}
+  .inputPageContainer {
+    min-height: 460px;
+    flex-grow: 1;
 
-.recipe-form-container .thanks {
-  text-align: center;
-}
+    button {
+      display: flex;
+      align-items: center;
+      background: #b18f5f;
+      color: #fff;
+      transition: 0.3s;
+      font-size: 14px;
+      border: none;
+      cursor: pointer;
+    
+      &:hover {
+        background: #cbac80;
+      }
+    }
 
-.recipe-form-container .thanks p {
-  margin: 50px 30px 50px 30px;
-}
+    .inputPageBackground {
+      background: rgba(0, 0, 0, 0.6);
+      height: 100%;
 
-.recipe-form input {
-  margin-bottom: 10px;
-}
+      h3, p {
+        margin: 10px 30px 20px 30px;
+      }
 
-.recipe-form textarea {
-  width: 100%;
-}
+      .suggestionSection {
+        padding: 100px 0 30px 0;
+        min-height: 750px;
+        height: calc(100vh - 70px);
+      
+        .suggestionContainer {
+          max-width: 1800px;
+      
+          .recipeFormContainer {
+            padding: 15px 0 15px 0;
+            background-color: #ecd9be;
+            color: #525252;
+            min-height: 300px;
+            max-height: calc(100vh - 250px);
+            overflow: auto;
 
-.recipe-form textarea[name=steps] {
-  width: calc(100% - 100px);
-  margin-bottom: 10px;
-}
+            .inputContainer {
+              margin-bottom: 30px;
 
-.recipe-form input[type=text] {
-  width: calc(100% - 100px);
-}
+              .inputSection {
+                display: flex;
+                flex-direction: column;
+                margin-bottom: 10px;
+            
+                input, textArea {
+                  flex-grow: 1;
+                }
+  
+                .deleteButton {
+                  align-self: flex-start;
+                  background: #871616;
+                  padding: 0 2px;
+                  margin-top: 2px;
+                  margin-right: 10px;
+                  height: 20px;
+              
+                  &:hover {
+                    background: #818181;
+                  }
+                }
+  
+                .buttonIcon {
+                  font-size: 16px;
+                }
+  
+                .sectionTitleWithButton {
+                  display: flex;
+                  margin-bottom: 5px;
+                  align-items: center;
+            
+                  .addButton {
+                    padding: 0 2px;
+                    margin-left: 10px;
+                    height: 20px;
+                  }
+                }
+  
+                .addSubItemButton {
+                  background: #b18f5f;
+                  margin-left: 10px;
+                  height: 25px;
+                  border-radius: 0;
+  
+                  &:hover {
+                    background: #cbac80;
+                  }
+                }
+            
+                .topItemContainer {
+                  display: flex;
+                  margin-bottom: 10px;
+                  
+                  .itemInput {
+                    flex-grow: 1;
+                  }
+                }
+  
+                .substitutionDropdownMenu {
+                  padding: 0;
+            
+                  .addSubstitutionButton {
+                    height: 25px;
+                    border-radius: 0;
+                  }
+                }
+            
+                .subItemContainer {
+                  display: flex;
+                  flex-direction: column;
+                  margin: 0 0 0 75px;
+            
+                  .subItem {
+                    display: flex;
+                    margin-bottom: 10px;
+                  }
+                }
+            
+                .substitutionContainer {
+                  display: flex;
+                  margin: 0 0 10px 30px;
+            
+                  p {
+                    margin: 0 5px;
+                  }
+            
+                  input {
+                    background-color: #e7e7e7;
+                    border: 1px solid #757575;
+                  }
+            
+                  .deleteButton {
+                    align-self: center;
+                    background: #525252;
+                    padding: 0 2px;
+                    margin-right: 0px;
+                    height: 14px;
+                
+                    &:hover {
+                      background: #818181;
+                    }
+            
+                    .buttonIcon {
+                      font-size: 10px;
+                    }
+                  }
+                }
+              }
+            
+              .tagCheckContainer {
+                display: flex;
+                margin-bottom: 10px;
+            
+                label {
+                  margin: 0 0 0 10px;
+                }
+              }
+            }
+          
+            .suggestionButtonGroup {
+              display: flex;
+              width: 100%;
+              justify-content: flex-end;
+              margin: 0 30px 15px 30px;
 
-.folder-dropdown {
-  margin-bottom: 10px;
-}
+              button {
+                font-size: 16px;
+                padding: 5px 10px;
+              }
 
-.recipe-form button {
-  display: inline-block;
-  color: #fff;
-  padding: 5px 20px 5px 20px;
-  margin-left: 10px;
-  margin-bottom: 10px;
-  transition: 0.3s;
-  font-size: 14px;
-  border: none;
-  max-height: 31px;
-}
-
-.add-button {
-  background: #b18f5f;
-}
-
-.add-button:hover {
-  background: #d01d3f;
-}
-
-.delete-button {
-  background: #525252;
-}
-
-.delete-button:hover {
-  background: #818181;
-}
-
-.recipe-form .submit-button {
-  background: #085e08;
-  margin-left: 0px;
-  margin-bottom: 0px;
-}
-
-.submit-button:hover {
-  background: #237e23;
-}
-
-.recipe-form-container .button-group {
-  width: 100%;
-}
-
-.recipe-form-container a {
-  display: inline-block;
-  color: #fff;
-  padding: 5px 20px 5px 20px;
-  margin: 0px 50px 0px 50px;
-  transition: 0.3s;
-  font-size: 14px;
-  border: none;
-  background: #b18f5f;
-}
-
-.recipe-form-container a:hover {
-  background: #cbac80;
-}
-
-.home-button {
-  float:left;
-}
-
-.form-button {
-  float:right;
+              .submitButton {
+                background: #085e08;
+                margin-left: 10px;
+                margin-bottom: 0px;
+            
+                &:hover {
+                  background: #237e23;
+                }
+              }
+            }
+          }
+        }
+      }
+    }  
+  }
 }
