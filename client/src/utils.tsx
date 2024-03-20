@@ -1,63 +1,13 @@
 import $ from "jquery";
 import "jquery-ui-dist/jquery-ui";
-import { DietarySelection, Tag } from "./types";
 import React from "react";
-import headerStyles from "./styles/Header.module.scss";
-import recipeSearchStyles from "./styles/RecipeSearchPage.module.scss";
 import { LoadingRecipeCard } from "./components/LoadingRecipeCard";
 import { DietarySelectionIndices } from "./consts";
+import { DietarySelection, NestedSuggestionInput, Tag } from "./types";
+import headerStyles from "./styles/Header.module.scss";
+import recipeSearchStyles from "./styles/RecipeSearchPage.module.scss";
 
-export function getDietaryRestrictionAndSubstitute(tag: Tag) {
-  if (tag === Tag.Vegan || tag === Tag.VeganSubstitute) {
-    return [Tag.Vegan, Tag.VeganSubstitute];
-  } else if (tag === Tag.Vegetarian || tag === Tag.VegetarianSubstitute) {
-    return [Tag.Vegetarian, Tag.VegetarianSubstitute];
-  } else if (tag === Tag.GlutenFree || tag === Tag.GlutenFreeSubstitute) {
-    return [Tag.GlutenFree, Tag.GlutenFreeSubstitute];
-  } else {
-    return [];
-  }
-}
-
-export function createTagFilter(tag: Tag, className: string, onClick: () => void, defaultChecked: boolean, buttonText: string) {
-  return (
-    <li className={recipeSearchStyles.tagFilter} key={tag}>
-      <input className={className} type="checkbox" onClick={onClick} id={tag} defaultChecked={defaultChecked} />
-      <div className={recipeSearchStyles.tagFilterLabel}>
-        {buttonText}
-      </div>
-    </li>
-  );
-}
-
-export function setSelectedTags(className: string, setSelectionCallback: (value: React.SetStateAction<Tag[]>) => void) {
-  const checkboxes = Array.from(document.getElementsByClassName(className)) as HTMLInputElement[];
-  const newSelectedTags = checkboxes.filter((checkbox) => {return checkbox.checked}).map((checkbox) => checkbox.id as Tag);
-  setSelectionCallback(newSelectedTags);
-}
-
-export function isRecipeVisibleWithSelectedTags(recipeTags: string[], dietaryTags: Tag[], difficultyTags: Tag[], categoryTags: Tag[]) {
-  const matchesAllDietaryTags = dietaryTags.length === 0 || dietaryTags.every((tag) => getDietaryRestrictionAndSubstitute(tag).some((t) => recipeTags.includes(t)));
-  const matchesAnyDifficultyTags = difficultyTags.length === 0 || difficultyTags.some((tag) => recipeTags.includes(tag));
-  const matchesAnyCategoryTags = categoryTags.length === 0 || categoryTags.some((tag) => recipeTags.includes(tag));
-  return matchesAllDietaryTags && matchesAnyDifficultyTags && matchesAnyCategoryTags;
-}
-
-export function getIngredients() {
-  var ingredients = document.getElementById('ingredient-list')?.innerText;
-  var tmp = document.createElement('textarea');
-  
-  if (ingredients != null) {
-    tmp.value = ingredients;
-    document.body.appendChild(tmp);
-    tmp.select();
-    document.execCommand('copy');
-    document.body.removeChild(tmp);
-    window.alert("Copied the Following Ingredients: \n"+ingredients);
-  } else {
-    window.alert("Failed to copy ingredients. Please try again.");
-  }
-}
+/* ---------- General Site Utils ---------- */
 
 export function scrollPage() {
   const recipeContainer = document.getElementById("scroll-top-container");
@@ -100,6 +50,324 @@ export function smoothScrollDown(e: React.MouseEvent<HTMLElement>, targetId: str
   }
 }
 
+/* ------- Recipe Search Page Utils ------- */
+
+export function getDietaryRestrictionAndSubstitute(tag: Tag) {
+  if (tag === Tag.Vegan || tag === Tag.VeganSubstitute) {
+    return [Tag.Vegan, Tag.VeganSubstitute];
+  } else if (tag === Tag.Vegetarian || tag === Tag.VegetarianSubstitute) {
+    return [Tag.Vegetarian, Tag.VegetarianSubstitute];
+  } else if (tag === Tag.GlutenFree || tag === Tag.GlutenFreeSubstitute) {
+    return [Tag.GlutenFree, Tag.GlutenFreeSubstitute];
+  } else {
+    return [];
+  }
+}
+
+export function createTagFilter(
+  tag: Tag, className: string,
+  onClick: () => void, defaultChecked: boolean, buttonText: string
+) {
+  return (
+    <li className={recipeSearchStyles.tagFilter} key={tag}>
+      <input className={className} type="checkbox" onClick={onClick} id={tag} defaultChecked={defaultChecked} />
+      <div className={recipeSearchStyles.tagFilterLabel}>
+        {buttonText}
+      </div>
+    </li>
+  );
+}
+
+export function setSelectedTags(className: string, setSelectionCallback: (value: React.SetStateAction<Tag[]>) => void) {
+  const checkboxes = Array.from(document.getElementsByClassName(className)) as HTMLInputElement[];
+  const newSelectedTags = 
+    checkboxes.filter((checkbox) => {return checkbox.checked}).map((checkbox) => checkbox.id as Tag);
+  setSelectionCallback(newSelectedTags);
+}
+
+export function isRecipeVisibleWithSelectedTags(
+  recipeTags: string[],
+  dietaryTags: Tag[],
+  difficultyTags: Tag[],
+  categoryTags: Tag[]
+) {
+  const matchesAllDietaryTags =
+    dietaryTags.length === 0 || 
+    dietaryTags.every((tag) => getDietaryRestrictionAndSubstitute(tag).some((t) => recipeTags.includes(t)));
+  const matchesAnyDifficultyTags =
+    difficultyTags.length === 0 ||
+    difficultyTags.some((tag) => recipeTags.includes(tag));
+  const matchesAnyCategoryTags =
+    categoryTags.length === 0 ||
+    categoryTags.some((tag) => recipeTags.includes(tag));
+  return matchesAllDietaryTags && matchesAnyDifficultyTags && matchesAnyCategoryTags;
+}
+
+export function getLoadingRecipeCards() {
+  let loadingCards = [];
+  for (var i = 0; i < 10; i++) {
+    loadingCards.push(<LoadingRecipeCard key={i} />);
+  }
+  return loadingCards;
+}
+
+/* ---------- Recipe Page Utils ---------- */
+
+export function getDietarySelectionItems(
+  rawItems: string[][],
+  substitutions: DietarySelection[],
+  isOrdered: boolean
+) {
+  const itemsByDietarySelection: Map<DietarySelection, (JSX.Element | null)[]> = 
+    new Map<DietarySelection, (JSX.Element | null)[]>();
+
+  const originalIngredientsList = buildMaybeNestedList(rawItems, DietarySelection.Original, isOrdered);
+
+  itemsByDietarySelection.set(DietarySelection.Original, originalIngredientsList);
+  substitutions.forEach((dietarySelection) => {
+    const dietarySelectionItems = buildMaybeNestedList(rawItems, dietarySelection, isOrdered);
+    itemsByDietarySelection.set(dietarySelection, dietarySelectionItems);
+  });
+  return itemsByDietarySelection;
+}
+
+export function getIngredients() {
+  var ingredients = document.getElementById('ingredient-list')?.innerText;
+  var tmp = document.createElement('textarea');
+  
+  if (ingredients != null) {
+    tmp.value = ingredients;
+    document.body.appendChild(tmp);
+    tmp.select();
+    document.execCommand('copy');
+    document.body.removeChild(tmp);
+    window.alert("Copied the Following Ingredients: \n"+ingredients);
+  } else {
+    window.alert("Failed to copy ingredients. Please try again.");
+  }
+}
+
+/* ----- Recipe Suggestion Page Utils ----- */
+
+export function addInput(
+  inputs: NestedSuggestionInput[],
+  setInputs: React.Dispatch<React.SetStateAction<NestedSuggestionInput[]>>,
+  parentIdx?: number,
+) {
+  if (parentIdx == null) {
+    // add top level input
+    setInputs([...inputs, { inputText: "", substitutions: new Map<Tag, string>(), subInputs:[] }]);
+  } else {
+    // add sub input
+    const parentInput = inputs[parentIdx];
+    if (parentInput != null) {
+      const newInputs = [...inputs];
+      newInputs[parentIdx].subInputs = [
+        ...parentInput.subInputs,
+        { subInputText: "", substitutions: new Map<Tag, string>() }
+      ];
+      setInputs(newInputs);
+    }
+  }
+}
+
+export function addInputSubstitution(
+  inputs: NestedSuggestionInput[],
+  setInputs: React.Dispatch<React.SetStateAction<NestedSuggestionInput[]>>,
+  diet: Tag,
+  idx: number,
+  parentIdx?: number
+) {
+  if (parentIdx == null) {
+    // add substitution to top level input
+    const input = inputs[idx];
+    if (input != null) {
+      const newInputs = [...inputs];
+      newInputs[idx].substitutions.set(diet, "");
+      setInputs(newInputs);
+    }
+  } else {
+    // add substitution to sub level input
+    const parentInput = inputs[parentIdx];
+    if (parentInput != null) {
+      const subInput = parentInput.subInputs[idx];
+      if (subInput != null) {
+        const newInputs = [...inputs];
+        const newSubInputs = [...parentInput.subInputs];
+        newSubInputs[idx].substitutions.set(diet, "");
+        newInputs[parentIdx].subInputs = newSubInputs;
+        setInputs(newInputs);
+      }
+    }
+  } 
+}
+
+export function deleteInput(
+  inputs: NestedSuggestionInput[],
+  setInputs: React.Dispatch<React.SetStateAction<NestedSuggestionInput[]>>,
+  idx: number,
+  parentIdx?: number
+) {
+  if (parentIdx == null) {
+    // delete top level input
+    const newInputs = [...inputs];
+    newInputs.splice(idx, 1);
+    setInputs(newInputs);
+  } else {
+    // delete sub input
+    const parentInput = inputs[parentIdx];
+    if (parentInput != null) {
+      const newSubInputs = [...parentInput.subInputs];
+      newSubInputs.splice(idx, 1);
+      const newInputs = [...inputs];
+      newInputs[parentIdx] = {
+        inputText: parentInput.inputText,
+        substitutions: parentInput.substitutions,
+        subInputs: newSubInputs,
+      };
+      setInputs(newInputs);
+    }
+  }
+}
+
+export function deleteInputSubstitution (
+  inputs: NestedSuggestionInput[],
+  setInputs: React.Dispatch<React.SetStateAction<NestedSuggestionInput[]>>,
+  diet: Tag,
+  idx: number,
+  parentIdx?: number,
+) {
+  if (parentIdx == null) {
+    // delete top level input substitution
+    const input = inputs[idx];
+    if (input != null) {
+      const newInputs = [...inputs];
+      newInputs[idx].substitutions.delete(diet);
+      setInputs(newInputs);
+    }
+  } else {
+    // delete sub input substitution
+    const parentInput = inputs[parentIdx];
+    if (parentInput != null) {
+      const newSubInputs = [...parentInput.subInputs];
+      newSubInputs[idx].substitutions.delete(diet);
+      const newInputs = [...inputs];
+      newInputs[parentIdx] = {
+        inputText: parentInput.inputText,
+        substitutions: parentInput.substitutions,
+        subInputs: newSubInputs,
+      };
+      setInputs(newInputs);
+    }
+  }
+}
+
+export function updateInput(
+  inputs: NestedSuggestionInput[],
+  setInputs: React.Dispatch<React.SetStateAction<NestedSuggestionInput[]>>,
+  element: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
+  idx: number,
+  parentIdx?: number
+) {
+  if (parentIdx == null) {
+    // update top level input
+    const input = inputs[idx];
+    if (input != null) {
+      const newInputs = [...inputs];
+      newInputs[idx].inputText = element.target.value;
+      setInputs(newInputs);
+    }
+  } else {
+    // update sub input
+    const parentInput = inputs[parentIdx];
+    if (parentInput != null) {
+      const subInput = parentInput.subInputs[idx];
+      if (subInput != null) {
+        const newInputs = [...inputs];
+        const newSubInputs = [...parentInput.subInputs];
+        newSubInputs[idx].subInputText = element.target.value;
+        newInputs[parentIdx].subInputs = newSubInputs;
+        setInputs(newInputs);
+      }
+    }
+  }
+}
+
+export function updateInputSubstitution(
+  inputs: NestedSuggestionInput[],
+  setInputs: React.Dispatch<React.SetStateAction<NestedSuggestionInput[]>>,
+  diet: Tag,
+  element: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
+  idx: number,
+  parentIdx?: number,
+) {
+  if (parentIdx == null) {
+    // update top level input substitutions
+    const input = inputs[idx];
+    if (input != null) {
+      const newInputs = [...inputs];
+      newInputs[idx].substitutions.set(diet, element.target.value);
+      setInputs(newInputs);
+    }
+  } else {
+    // update sub input substitutions
+    const parentInput = inputs[parentIdx];
+    if (parentInput != null) {
+      const subInput = parentInput.subInputs[idx];
+      if (subInput != null) {
+        const newInputs = [...inputs];
+        const newSubInputs = [...parentInput.subInputs];
+        newSubInputs[idx].substitutions.set(diet, element.target.value);
+        newInputs[parentIdx].subInputs = newSubInputs;
+        setInputs(newInputs);
+      }
+    }
+  }
+}
+
+export function getFormattedSuggestionInputs(ingredients: NestedSuggestionInput[], steps: NestedSuggestionInput[], notes: NestedSuggestionInput[]) {
+  const id = `"` + cleanRawInput($("input#recipeId").val()) + `", `;
+  const title = `"` + cleanRawInput($("input#title").val()) + `", `;
+  const subtitle = `"` + cleanRawInput($("input#subtitle").val()) + `", `;
+  const time = `"` + cleanRawInput($("input#time").val()) + `", `;
+  const imageUrl = `"` + cleanRawInput($("input#imageUrl").val()) + `", `;
+
+  let formattedTags = `'[`;
+  const tags = Array.from($(".tag:checkbox:checked").map(function () { return $(this).val(); }));
+  tags.forEach((tag, idx) => {
+    formattedTags += `"` + tag + `"`;
+    if (idx < tags.length - 1) {
+      formattedTags += `, `;
+    }
+  });
+  formattedTags += `]'`;
+
+  const formattedIngredients = formatNestedInputs(ingredients) + `, `;
+  const formattedSteps = formatNestedInputs(steps) + `, `;
+  let formattedNotes = `'[`;
+  notes.forEach((input, idx) => {
+    formattedNotes += `"` + cleanNestedInput(input.inputText) + `"`;
+    if (idx < notes.length - 1) {
+      formattedNotes += `, `;
+    }
+  });
+  formattedNotes += `]', `;
+
+  return { id, title, subtitle, time, imageUrl, formattedIngredients, formattedSteps, formattedNotes, formattedTags };
+}
+
+export function copyRecipe(recipeString: string) {
+  var tmp = document.createElement('textarea');
+  tmp.value = recipeString;
+  document.body.appendChild(tmp);
+  tmp.select();
+  document.execCommand('copy');
+  document.body.removeChild(tmp);
+  window.alert("Copied the Following Ingredients: \n"+recipeString);
+}
+
+/* ---- Utils Only Used in Other Utils ---- */
+
 export function maybeConvertStringWithLink(item: string) {
   if (item.includes("<a href")) {
     // Item contains a link, return an element that displays that link
@@ -124,7 +392,13 @@ export function getItemForDietarySelection(rawItem: string, index: number) {
     const variations = rawItem.split("///");
     const originalItem = variations[0];
     const maybeItem = variations[index];
-    return maybeItem === "omit" ? null : maybeConvertStringWithLink((index === 0 || maybeItem === null || maybeItem === "none") ? originalItem : maybeItem);
+    return maybeItem === "omit" 
+      ? null 
+      : maybeConvertStringWithLink(
+          (index === 0 || maybeItem === null || maybeItem === "none")
+            ? originalItem
+            : maybeItem
+        );
   } else {
     return maybeConvertStringWithLink(rawItem);
   }
@@ -149,24 +423,21 @@ export function buildMaybeNestedList(items: string[][], dietarySelection: Dietar
             return subItem != null ? <li key={i}>{subItem}</li> : null;
           }
         }).filter((element) => element != null);
-        return isOrdered ? 
-          (
-            <li key={idx}>
-              {topLevelItem}
-              <ol type="a">
-                {subItemsList}
-              </ol>
-            </li>
-          )
-        :
-          (
-            <li key={idx}>
-              {topLevelItem}
-              <ul>
-                {subItemsList}
-              </ul>
-            </li>
-          );
+        return isOrdered ? (
+          <li key={idx}>
+            {topLevelItem}
+            <ol type="a">
+              {subItemsList}
+            </ol>
+          </li>
+        ) : (
+          <li key={idx}>
+            {topLevelItem}
+            <ul>
+              {subItemsList}
+            </ul>
+          </li>
+        );
       } else {
         return null;
       }
@@ -176,31 +447,41 @@ export function buildMaybeNestedList(items: string[][], dietarySelection: Dietar
   });
 }
 
-export function getDietarySelectionItems(rawItems: string[][], substitutions: DietarySelection[], isOrdered: boolean) {
-  const itemsByDietarySelection: Map<DietarySelection, (JSX.Element | null)[]> = new Map<DietarySelection, (JSX.Element | null)[]>();
-  
-  const originalIngredientsList = buildMaybeNestedList(rawItems, DietarySelection.Original, isOrdered);
-  itemsByDietarySelection.set(DietarySelection.Original, originalIngredientsList);
-
-  substitutions.forEach((dietarySelection) => {
-    const dietarySelectionItems = buildMaybeNestedList(rawItems, dietarySelection, isOrdered);
-    itemsByDietarySelection.set(dietarySelection, dietarySelectionItems);
+export function formatNestedInputs(inputs: NestedSuggestionInput[]) {
+  let outputString = `'[`;
+  inputs.forEach((input, idx) => {
+    outputString += (`["` + createInputTextWithSubstitutions(input.inputText, input.substitutions) + `"`);
+    input.subInputs.forEach((subInput) => {
+      outputString += (`, "` + createInputTextWithSubstitutions(subInput.subInputText, subInput.substitutions) + `"`)
+    });
+    outputString += (`]`);
+    if (idx < inputs.length - 1) {
+      outputString += (`, `);
+    }
   });
-
-  return itemsByDietarySelection;
+  outputString += `]'`;
+  return outputString;
 }
 
-export function getLoadingRecipeCards() {
-  return [
-    <LoadingRecipeCard />,
-    <LoadingRecipeCard />,
-    <LoadingRecipeCard />,
-    <LoadingRecipeCard />,
-    <LoadingRecipeCard />,
-    <LoadingRecipeCard />,
-    <LoadingRecipeCard />,
-    <LoadingRecipeCard />,
-    <LoadingRecipeCard />,
-    <LoadingRecipeCard />,
-  ];
+export function createInputTextWithSubstitutions(inputText: string, substitutions: Map<Tag, string>) {
+  if (substitutions.size === 0) {
+    return cleanNestedInput(inputText);
+  } else {
+    const vegetarianSub = substitutions.get(Tag.Vegetarian) ?? "none";
+    const veganSub = substitutions.get(Tag.Vegan) ?? "none";
+    const glutenFreeSub = substitutions.get(Tag.GlutenFree) ?? "none";
+    return cleanNestedInput(inputText + "///" + vegetarianSub + "///" + veganSub + "///" + glutenFreeSub);
+  }
+}
+
+export function cleanRawInput(inputVal: string | number | string[] | undefined) {
+  if (inputVal != null) {
+    return (inputVal.toString().replaceAll(`"`, `\\"`));
+  } else {
+    return "";
+  }
+}
+
+export function cleanNestedInput(inputText: string) {
+  return inputText.replaceAll("'", "\\'").replaceAll('"', '\\\\"');
 }

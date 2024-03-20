@@ -1,6 +1,6 @@
-import styles from '../styles/Footer.module.scss';
-import recipeStyles from '../styles/Recipe.module.scss';
 import classNames from 'classnames';
+import recipeStyles from '../styles/Recipe.module.scss';
+import styles from '../styles/Footer.module.scss';
 
 export const Footer = () => {
   return (

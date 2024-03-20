@@ -39,3 +39,26 @@ export enum Tag {
   Bread = "bread",
   Drink = "drink",
 }
+
+/* Recipe Suggestion Page */
+
+export interface NestedSuggestionInput {
+  inputText: string;
+  substitutions: Map<Tag, string>;
+  subInputs: {
+    subInputText: string;
+    substitutions: Map<Tag, string>;
+  }[];
+}
+
+export interface FormattedRecipeSuggestion {
+  id: string;
+  title: string;
+  subtitle: string;
+  time: string;
+  imageUrl: string;
+  formattedIngredients: string;
+  formattedSteps: string;
+  formattedNotes: string;
+  formattedTags: string;
+}

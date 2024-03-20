@@ -1,10 +1,11 @@
+import "normalize.css";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { Home } from "./components/Home";
 import { RecipePage } from './components/RecipePage';
-import { scrollPage } from "./utils";
 import { RecipeSearchPage } from "./components/RecipeSearchPage";
-import { RecipeInputPage } from "./components/RecipeInputPage";
-import "normalize.css";
+import { RecipeSuggestionPage } from "./components/RecipeSuggestionPage";
+import { scrollPage } from "./utils";
+
 
 export default function RecipeSite() {
   // Handle smooth scrolling
@@ -16,7 +17,7 @@ export default function RecipeSite() {
         <Route index element={<Home />} />
         <Route path="recipes/*" element={<RecipeSearchPage />} />
         <Route path="recipe/*" element={<RecipePage />} />
-        <Route path="suggest-recipe" element={<RecipeInputPage />} />
+        <Route path="suggest-recipe" element={<RecipeSuggestionPage />} />
         <Route path="*" element={<Home />} />
       </Routes>
     </BrowserRouter>

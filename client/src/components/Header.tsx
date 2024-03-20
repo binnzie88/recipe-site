@@ -29,11 +29,4 @@ export const Header = ({ isScrollable }: { isScrollable: boolean } ) => {
       </div>
     </header>
   );
-
-  /**
-   * Once recipe input page is working, add this button to the ul above:
-   * <li>
-        <a href="../recipe-input">Suggest a Recipe</a>
-      </li>
-   */
 }

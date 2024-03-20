@@ -77,7 +77,7 @@ export const DifficultyTags = [
 
 /* Recipe Loading State */
 
-export const loadingRecipe: RecipeEntry = {
+export const LoadingRecipe: RecipeEntry = {
   id: "loading",
   image: "loading.png",
   ingredients: [["Loading..."]],

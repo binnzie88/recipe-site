@@ -1,9 +1,9 @@
 import classNames from 'classnames';
-import styles from '../styles/RecipeSearchPage.module.scss';
 import React, { Dispatch, SetStateAction, useMemo } from 'react';
-import { createTagFilter, getDietaryRestrictionAndSubstitute, setSelectedTags } from '../utils';
 import { CategoryTags, DietaryFilterTags, DifficultyTags, TagButtonText } from '../consts';
 import { Tag } from '../types';
+import { createTagFilter, getDietaryRestrictionAndSubstitute, setSelectedTags } from '../utils';
+import styles from '../styles/RecipeSearchPage.module.scss';
 
 export interface RecipeSearchFiltersProps {
   updateSearchTermCallback: () => void;

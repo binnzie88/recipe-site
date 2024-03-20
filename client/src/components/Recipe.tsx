@@ -1,10 +1,10 @@
 import classNames from 'classnames';
 import { useMemo, useState } from 'react';
+import { DietarySelectionButtonText } from '../consts';
 import { DietarySelection, Tag } from '../types';
 import { getDietarySelectionItems, getIngredients } from '../utils';
-import styles from '../styles/Recipe.module.scss';
 import sharedStyles from '../styles/CommonStyles.module.scss';
-import { DietarySelectionButtonText } from '../consts';
+import styles from '../styles/Recipe.module.scss';
 
 export interface RecipeProps {
   title: string;
@@ -58,6 +58,7 @@ export const Recipe = ({ title, ingredients, steps, notes, image, substitutions,
     return [DietarySelection.Original, ...substitutions].map((substitution) => {
       return (
         <button 
+          key={substitution}
           className={classNames(substitution, {"selected": dietarySelection === substitution})}
           onClick={() => setDietarySelection(substitution)}
         >

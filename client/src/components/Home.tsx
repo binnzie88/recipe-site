@@ -2,9 +2,9 @@ import classNames from 'classnames';
 import React from 'react';
 import { Header } from './Header';
 import { Footer } from './Footer';
+import { smoothScrollDown } from '../utils';
 import sharedStyles from '../styles/CommonStyles.module.scss';
 import styles from '../styles/Home.module.scss';
-import { smoothScrollDown } from '../utils';
 
 export const Home = () => {
   // Build category cards

@@ -1,7 +1,7 @@
 import classNames from 'classnames';
-import styles from '../styles/RecipeSearchPage.module.scss';
-import sharedStyles from '../styles/CommonStyles.module.scss';
 import { RecipeEntry } from '../types';
+import sharedStyles from '../styles/CommonStyles.module.scss';
+import styles from '../styles/RecipeSearchPage.module.scss';
 
 export const RecipeCard = ({ recipe }: { recipe: RecipeEntry }) => {
   const imageSplit = recipe.image.split(".");

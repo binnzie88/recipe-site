@@ -1,9 +1,9 @@
+import classNames from 'classnames';
 import React from 'react';
 import { Header } from './Header';
 import { Footer } from './Footer';
 import sharedStyles from '../styles/CommonStyles.module.scss';
 import styles from '../styles/Recipe.module.scss';
-import classNames from 'classnames';
 
 export const RecipeErrorPage = ({ errorContent }: { errorContent: JSX.Element }) => {
   return (

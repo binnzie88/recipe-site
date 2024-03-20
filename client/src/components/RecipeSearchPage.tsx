@@ -4,15 +4,15 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Header } from './Header';
 import { Footer } from './Footer';
 import { RecipeCard } from './RecipeCard';
+import { RecipeSearchFilters } from './RecipeSearchFilters';
+import { CategoryTags, DietaryTags, DifficultyTags } from '../consts';
 import { RecipeEntry, Tag } from '../types';
 import {
   getLoadingRecipeCards,
   isRecipeVisibleWithSelectedTags
 } from '../utils';
-import styles from '../styles/RecipeSearchPage.module.scss';
 import sharedStyles from '../styles/CommonStyles.module.scss';
-import { CategoryTags, DietaryTags, DifficultyTags } from '../consts';
-import { RecipeSearchFilters } from './RecipeSearchFilters';
+import styles from '../styles/RecipeSearchPage.module.scss';
 
 export const RecipeSearchPage = () => {
   // State init/management
@@ -88,7 +88,7 @@ export const RecipeSearchPage = () => {
       // Display loading states for recipe cards
       return getLoadingRecipeCards();
     } else {
-      return filteredRecipes.map((recipe) => <RecipeCard recipe={recipe} />);
+      return filteredRecipes.map((recipe, idx) => <RecipeCard key={idx} recipe={recipe} />);
     }
   }, [filteredRecipes]);
 

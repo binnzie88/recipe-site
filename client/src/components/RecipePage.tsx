@@ -1,19 +1,19 @@
 import axios from 'axios';
+import classNames from 'classnames';
 import React, { useEffect, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import { Header } from './Header';
 import { Footer } from './Footer';
 import { Recipe } from './Recipe';
+import { RecipeErrorPage } from './RecipeErrorPage';
+import { DietarySelections, LoadingRecipe } from '../consts';
 import { RecipeEntry, Tag } from '../types';
 import { navBackToTop, smoothScrollDown } from '../utils';
 import sharedStyles from '../styles/CommonStyles.module.scss';
 import styles from '../styles/Recipe.module.scss';
-import classNames from 'classnames';
-import { DietarySelections, loadingRecipe } from '../consts';
-import { RecipeErrorPage } from './RecipeErrorPage';
 
 export const RecipePage = () => {
-  const [recipe, setRecipe] = useState<RecipeEntry | undefined>(loadingRecipe);
+  const [recipe, setRecipe] = useState<RecipeEntry | undefined>(LoadingRecipe);
   const [recipeError, setRecipeError] = useState<JSX.Element>(
     <h2>{"We could not load the recipe, please try again later."}</h2>
   );
@@ -21,12 +21,12 @@ export const RecipePage = () => {
   // Get recipe from the server
   const location = useLocation();
   const recipeId = location.pathname.split("/")[2] ?? "";
-  console.log(recipeId);
   if (recipeId.length < 1) {
     return (
       <RecipeErrorPage errorContent={<h2>{"Select a recipe "}<a href="../recipes/">{"here"}</a></h2>} />
     );
   }
+  
   useEffect(() => {
     axios.get('https://www.justabunchofrecipes.com/api/recipe/'+recipeId).then((response) => {
       if (response.data.error != null) {
