@@ -44,8 +44,6 @@ app.get("/api/recipes/", (req, res) => {
 
 app.get("/api/recipe/*", (req, res) => {
   const query = 'SELECT * FROM recipes.RecipeTable WHERE id="'+req.params[0]+'"';
-  console.log("QUERY");
-  console.log(query);
 
   pool.query(
     query,

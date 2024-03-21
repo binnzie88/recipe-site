@@ -78,21 +78,21 @@ export const Recipe = ({ title, ingredients, steps, notes, image, substitutions,
               <div className="row">
                 <div className={classNames("col-12", "col-md-5", styles.noPrint)}>
                   <img src={require("../img/"+image)} alt="" className="img-fluid" />
-                  <div className={styles.notes}>
+                  <div className={classNames("d-md-block", "d-sm-none", styles.notes)}>
                     <h4>{"Notes:"}</h4>
                     {notesList}
-                  </div>
-                  <div className={styles.printButtons}>
-                    <button title="Print Recipe" onClick={() => window.print()}>
-                        <i className="material-icons">print</i>
-                    </button>
-                    <button title="Copy Ingredients" onClick={getIngredients}>
-                        <i className="material-icons">list</i>
-                    </button>
                   </div>
                 </div>
                 <div className={classNames("col-12", "col-md-7")}>
                   <div className={classNames(styles.mainColumnContent, styles.printable)} id="recipe-text">
+                    <div className={styles.printButtons}>
+                      <button title="Print Recipe" onClick={() => window.print()}>
+                          <i className="material-icons">print</i>
+                      </button>
+                      <button title="Copy Ingredients" onClick={getIngredients}>
+                          <i className="material-icons">list</i>
+                      </button>
+                    </div>
                     <h2>{title}</h2>
                     <div>
                       {dietarySelectionButtons}
@@ -111,6 +111,10 @@ export const Recipe = ({ title, ingredients, steps, notes, image, substitutions,
                       </ol>
                   </div>
                   <div className={styles.printOnly}>
+                    <h3>{"Notes:"}</h3>
+                    {notesList}
+                  </div>
+                  <div className={classNames("d-md-none", styles.notes, styles.stackedNotes)}>
                     <h3>{"Notes:"}</h3>
                     {notesList}
                   </div>
