@@ -280,19 +280,14 @@ export async function submitRecipe(
         console.log("Cannot access image storage, saving recipe without image");
     } else {
         if (sourceImageBlob !== undefined) {
-            console.log("ADDING IMAGE URL");
             const sourceImageUrl = await uploadImageAndGetUrl(sourceImageBlob, recipeId, appStorage);
-            console.log("SOURCE IMAGE?", sourceImageUrl);
             if (sourceImageUrl !== undefined) {
-                console.log("GOT SOURCE IMAGE");
                 recipe.imageUrl = sourceImageUrl;
 
                 // Only add a thumbnail if the main image uploaded successfully
                 if (thumbnailImageBlob !== undefined) {
-                    console.log("ADDING THUMBNAIL IMAGE");
                     const thumbnailImageUrl =
                         await uploadImageAndGetUrl(thumbnailImageBlob, `${recipeId}_thumbnail`, appStorage);
-                    console.log("THUMBNAIL IMAGE?", thumbnailImageUrl);
                     if (thumbnailImageUrl !== undefined) {
                         recipe.thumbnailImageUrl = thumbnailImageUrl;
                     } else {

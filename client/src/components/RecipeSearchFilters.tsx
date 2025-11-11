@@ -127,7 +127,7 @@ export const RecipeSearchFilters = ({
                 <div className={styles.searchContainer}>
                     <h3 className={classNames("d-lg-none", styles.sidebarTitle, styles.sidebarTitleSm)}>{"Search"}</h3>
                     <div className={styles.searchForm}>
-                        <input type="text" id="searchInput" />
+                        <input type="text" id="searchInput" onKeyUp={updateSearchTermCallback}/>
                         <button type="submit" onClick={updateSearchTermCallback}><i className="material-icons">search</i></button>
                     </div>
                     <button
@@ -209,7 +209,7 @@ function getDietaryChecks(
                     key={`tag${isSmall ? '-sm' : ''}-${tag}`}
                     inputClassName={`dietary-tag-checkbox${isSmall ? '-sm' : ''}`}
                     inputId={`tag${isSmall ? '-sm' : ''}-${tag}`}
-                    onChange={() => () => onDietaryTagCheckboxChange(tag)}
+                    onChange={() => onDietaryTagCheckboxChange(tag)}
                     isChecked={dietaryTags.includes(tag)}
                     buttonText={DietarySelectionLabelsMap.get(tag) ?? ""}
                 />
