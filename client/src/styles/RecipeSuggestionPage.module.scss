@@ -1,256 +1,440 @@
 /* ---------- Recipe Input Page ---------- */
 
 .inputPageTop {
-  display: flex;
-  flex-direction: column;
-  height: 100vh;
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
 
-  .submitOverlay {
-    position: fixed;
-    display: none;
-    align-items: center;
-    justify-content: center;
-    width: 100%;
-    height: 100%;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background-color: rgba(0,0,0,0.5);
-    z-index: 2;
-  
-    .submitOverlayContent {
-      background-color: #ecd9be;
-      color: #525252;
-      display: flex;
-      flex-direction: column;
-      max-width: calc(65vw);
-      max-height: calc(60vh);
-      padding: 40px;
-  
-      .overlayTextArea {
-        background-color: #e9cea7;
-        overflow-x: auto;
-        text-wrap: nowrap;
-        padding: 10px 15px 15px 15px;
-        margin-bottom: 20px;
-        flex-grow: 1;
-  
-        .recipeField {
-          margin-left: 10px;
-        }
-      }
-  
-      .overlayButtonGroup {
-        display: flex;
-        align-self: flex-end;
-  
-        button {
-          font-size: 16px;
-          padding: 5px 10px;
-  
-          &.closeButton {
-            background: #871616;
-            margin-left: 10px;
-  
-            &:hover {
-              background: #818181;
-            }
-          }
-        }
-      }
-    }
-  }
-
-  .inputPageContainer {
-    min-height: 460px;
-    flex-grow: 1;
-
-    button {
-      display: flex;
-      align-items: center;
-      background: #b18f5f;
-      color: #fff;
-      transition: 0.3s;
-      font-size: 14px;
-      border: none;
-      cursor: pointer;
+    .submitOverlay {
+        position: fixed;
+        display: none;
+        align-items: center;
+        justify-content: center;
+        width: 100%;
+        height: 100%;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: rgba(0,0,0,0.5);
+        z-index: 2;
     
-      &:hover {
-        background: #cbac80;
-      }
-    }
-
-    .inputPageBackground {
-      background: rgba(0, 0, 0, 0.6);
-      height: 100%;
-
-      h3, p {
-        margin: 10px 30px 20px 30px;
-      }
-
-      .suggestionSection {
-        padding: 100px 0 30px 0;
-        min-height: 750px;
-        height: calc(100vh - 70px);
-      
-        .suggestionContainer {
-          max-width: 1800px;
-      
-          .recipeFormContainer {
-            padding: 15px 0 15px 0;
+        .submitOverlayContent {
             background-color: #ecd9be;
             color: #525252;
-            min-height: 300px;
-            max-height: calc(100vh - 250px);
-            overflow: auto;
-
-            .inputContainer {
-              margin-bottom: 30px;
-
-              .inputSection {
-                display: flex;
-                flex-direction: column;
-                margin-bottom: 10px;
-            
-                input, textArea {
-                  flex-grow: 1;
-                }
-  
-                .deleteButton {
-                  align-self: flex-start;
-                  background: #871616;
-                  padding: 0 2px;
-                  margin-top: 2px;
-                  margin-right: 10px;
-                  height: 20px;
-              
-                  &:hover {
-                    background: #818181;
-                  }
-                }
-  
-                .buttonIcon {
-                  font-size: 16px;
-                }
-  
-                .sectionTitleWithButton {
-                  display: flex;
-                  margin-bottom: 5px;
-                  align-items: center;
-            
-                  .addButton {
-                    padding: 0 2px;
+            display: flex;
+            flex-direction: column;
+            max-width: calc(65vw);
+            max-height: calc(60vh);
+            padding: 40px;
+        
+            .overlayTextArea {
+                background-color: #e9cea7;
+                overflow-x: auto;
+                text-wrap: nowrap;
+                padding: 10px 15px 15px 15px;
+                margin-bottom: 20px;
+                flex-grow: 1;
+        
+                .recipeField {
                     margin-left: 10px;
-                    height: 20px;
-                  }
                 }
-  
-                .addSubItemButton {
-                  background: #b18f5f;
-                  margin-left: 10px;
-                  height: 25px;
-                  border-radius: 0;
-  
-                  &:hover {
-                    background: #cbac80;
-                  }
-                }
-            
-                .topItemContainer {
-                  display: flex;
-                  margin-bottom: 10px;
-                  
-                  .itemInput {
-                    flex-grow: 1;
-                  }
-                }
-  
-                .substitutionDropdownMenu {
-                  padding: 0;
-            
-                  .addSubstitutionButton {
-                    height: 25px;
-                    border-radius: 0;
-                  }
-                }
-            
-                .subItemContainer {
-                  display: flex;
-                  flex-direction: column;
-                  margin: 0 0 0 75px;
-            
-                  .subItem {
-                    display: flex;
-                    margin-bottom: 10px;
-                  }
-                }
-            
-                .substitutionContainer {
-                  display: flex;
-                  margin: 0 0 10px 30px;
-            
-                  p {
-                    margin: 0 5px;
-                  }
-            
-                  input {
-                    background-color: #e7e7e7;
-                    border: 1px solid #757575;
-                  }
-            
-                  .deleteButton {
-                    align-self: center;
-                    background: #525252;
-                    padding: 0 2px;
-                    margin-right: 0px;
-                    height: 14px;
-                
-                    &:hover {
-                      background: #818181;
-                    }
-            
-                    .buttonIcon {
-                      font-size: 10px;
-                    }
-                  }
-                }
-              }
-            
-              .tagCheckContainer {
+            }
+        
+            .overlayButtonGroup {
                 display: flex;
-                margin-bottom: 10px;
+                align-self: flex-end;
+        
+                button {
+                    font-size: 16px;
+                    padding: 5px 10px;
             
-                label {
-                  margin: 0 0 0 10px;
-                }
-              }
-            }
-          
-            .suggestionButtonGroup {
-              display: flex;
-              width: 100%;
-              justify-content: flex-end;
-              margin: 0 30px 15px 30px;
-
-              button {
-                font-size: 16px;
-                padding: 5px 10px;
-              }
-
-              .submitButton {
-                background: #085e08;
-                margin-left: 10px;
-                margin-bottom: 0px;
+                    &.closeButton {
+                        background: #871616;
+                        margin-left: 10px;
             
-                &:hover {
-                  background: #237e23;
+                        &:hover {
+                            background: #818181;
+                        }
+                    }
                 }
-              }
             }
-          }
         }
-      }
-    }  
-  }
+    }
+
+    .inputPageContainer {
+        min-height: 460px;
+        flex-grow: 1;
+
+        button {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--secondary-color);
+            color: #fff;
+            transition: 0.3s;
+            font-size: 14px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            
+            &:hover {
+                background: #cbac80;
+            }
+        }
+
+        .inputPageBackground {
+            background: rgba(0, 0, 0, 0.6);
+            height: 100%;
+
+            h3, p {
+                margin: 10px 30px 20px 30px;
+            }
+
+            .suggestionSection {
+                padding: 100px 0 30px 0;
+                min-height: 750px;
+                height: calc(100vh - 70px);
+        
+                .suggestionContainer {
+                    max-width: 1800px;
+        
+                    .recipeFormContainer {
+                        padding: 15px 0 15px 0;
+                        background-color: #ecd9be;
+                        color: #525252;
+                        min-height: 300px;
+                        max-height: calc(100vh - 250px);
+                        overflow: auto;
+
+                        .inputContainer {
+                            margin-bottom: 30px;
+
+                            .inputSection {
+                                display: flex;
+                                flex-direction: column;
+                                margin-bottom: 10px;
+                
+                                input, textArea {
+                                    flex-grow: 1;
+                                }
+    
+                                .deleteButton {
+                                    align-self: flex-start;
+                                    background: #871616;
+                                    padding: 0 2px;
+                                    margin-top: 2px;
+                                    margin-right: 10px;
+                                    height: 20px;
+                            
+                                    &:hover {
+                                        background: #818181;
+                                    }
+                                }
+    
+                                .buttonIcon {
+                                    font-size: 16px;
+                                }
+    
+                                .sectionTitleWithButton {
+                                    display: flex;
+                                    margin-bottom: 5px;
+                                    align-items: center;
+                                
+                                    .addButton {
+                                        padding: 0 2px;
+                                        margin-left: 10px;
+                                        height: 20px;
+                                    }
+                                }
+    
+                                .addSubItemButton {
+                                    background: var(--secondary-color);
+                                    margin-left: 10px;
+                                    height: 25px;
+                                    border-radius: 0;
+                    
+                                    &:hover {
+                                        background: #cbac80;
+                                    }
+                                }
+                
+                                .topItemContainer {
+                                    display: flex;
+                                    margin-bottom: 10px;
+                                    
+                                    .itemInput {
+                                        flex-grow: 1;
+                                    }
+                                }
+    
+                                .substitutionDropdownMenu {
+                                    padding: 0;
+                                
+                                    .addSubstitutionButton {
+                                        height: 25px;
+                                        border-radius: 0;
+                                    }
+                                }
+                
+                                .subItemContainer {
+                                    display: flex;
+                                    flex-direction: column;
+                                    margin: 0 0 0 75px;
+                                
+                                    .subItem {
+                                        display: flex;
+                                        margin-bottom: 10px;
+                                    }
+                                }
+                
+                                .substitutionContainer {
+                                    display: flex;
+                                    margin: 0 0 10px 30px;
+                                
+                                    p {
+                                        margin: 0 5px;
+                                    }
+                                
+                                    input {
+                                        background-color: #e7e7e7;
+                                        border: 1px solid #757575;
+                                    }
+                                
+                                    .deleteButton {
+                                        align-self: center;
+                                        background: #525252;
+                                        padding: 0 2px;
+                                        margin-right: 0px;
+                                        height: 14px;
+                                    
+                                        &:hover {
+                                            background: #818181;
+                                        }
+                                
+                                        .buttonIcon {
+                                            font-size: 10px;
+                                        }
+                                    }
+                                }
+                            }
+                
+                            .tagCheckContainer {
+                                display: flex;
+                                margin-bottom: 10px;
+                            
+                                label {
+                                    margin: 0 0 0 10px;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }  
+    }
+}
+
+.suggestionForm {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    margin: 0 20px;
+
+    .recipeInputLabel {
+        font-size: 18px;
+        font-weight: 600;
+    }
+
+    .input {
+        display: flex;
+        flex-direction: row;
+        gap: 10px;
+    }
+
+    .longInput {
+        flex-grow: 1;
+    }
+    
+    .inputGroupHeaderWithAddButton {
+        display: flex;
+        flex-direction: row;
+        gap: 10px;
+    }
+    
+    .inputWithRemoveButton {
+        display: flex;
+        flex-direction: row;
+        gap: 10px;
+    }
+    
+    .deleteButton {
+        align-self: center;
+        background: #525252;
+        padding: 0 2px;
+        margin-right: 0px;
+        height: 14px;
+    
+        &:hover {
+            background: #818181;
+        }
+
+        .buttonIcon {
+            font-size: 10px;
+        }
+    }
+
+    .dynamicInputGroup {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        border: 2px solid var(--secondary-color);
+        border-radius: 10px;
+        padding: 10px;
+
+        .ingredientOrStepInputFields {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .ingredientOrStepInputField {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+    
+        .ingredientOrStepSubInput {
+            display: flex;
+            flex-direction: row;
+            gap: 10px;
+            margin-left: 25px;
+            flex-wrap: wrap;
+        }
+
+        .subIngredientOrStepFields {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin: 10px 0 0 25px;
+            width: 75%;
+        }
+
+        .subIngredientOrStepField {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+    
+        .ingredientOrStepSubItemsGroup {
+            margin-left: 30px;
+        }
+
+        .substitutionHeader {
+            min-width: 200px;
+            text-align: end;
+        }
+
+        .addSubItemButton {
+            justify-self: end;
+        }
+    }
+
+    .nutritionInputs {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .nutritionItemLabel {
+        font-weight: 600;
+    }
+
+    .nutritionItemInput {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .nutritionItemInputFields {
+        display: flex;
+        flex-direction: row;
+        gap: 10px;
+        flex-wrap: wrap;
+    }
+
+    .suggestionButtonGroup {
+        display: flex;
+        flex-direction: row;
+        width: 100%;
+        justify-content: flex-end;
+        margin-bottom: 15px;
+        padding-right: 10px;
+        gap: 10px;
+    
+        button {
+            font-size: 16px;
+            padding: 5px 10px;
+        }
+    
+        .submitButton {
+            background: #085e08;
+        
+            &:hover {
+                background: #237e23;
+            }
+        }
+    }
+
+    .tagInput {
+        display: flex;
+        flex-direction: row;
+        gap: 10px;
+    }
+
+    .imageInput::file-selector-button {
+        align-items: center;
+        justify-content: center;
+        padding: 5px 10px;
+        background: var(--secondary-color);
+        color: #fff;
+        transition: 0.3s;
+        font-size: 14px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+    }
+}
+
+.imagePreviewContainer {
+    display: flex;
+    flex-direction: row;
+    gap: 20px;
+    align-items: center;
+
+    .imageLabel {
+        font-weight: 600;
+    }
+
+    .sourceImageContainer {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+
+        .sourceImage {
+            max-width: 300px;
+            max-height: 300px;
+        }
+    }
+
+    .thumbnailImageContainer {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 10px;
+
+        .savedThumbnailImage {
+            width: 100px;
+            height: 100px;
+        }
+    }
 }

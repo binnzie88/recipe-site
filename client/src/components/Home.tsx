@@ -1,148 +1,119 @@
 import classNames from 'classnames';
 import React from 'react';
+import { smoothScrollDown } from '../utils';
+import { CategoryCard } from './CategoryCard';
 import { Header } from './Header';
 import { Footer } from './Footer';
-import { smoothScrollDown } from '../utils';
 import sharedStyles from '../styles/CommonStyles.module.scss';
 import styles from '../styles/Home.module.scss';
 
 export const Home = () => {
-  // Build category cards
-  const allCard = buildCategoryCard(
-    "/recipes",
-    <img src={require("./../img/lunch/chili_sq.jpeg")} className="img-fluid" alt="" />,
-    "All",
-    "Why limit yourself by arbitrary filters? Explore it all. Follow your heart."
-  );
-  const vegetarianCard = buildCategoryCard(
-    "recipes/?tag=vegetarian",
-    <img src={require("./../img/dinner/gnocchi_bake_sq.jpg")} className="img-fluid" alt="" />,
-    "Vegetarian",
-    "Meatless options that still embrace cheese and eggs as the delicious friends they are."
-  );
-  const veganCard = buildCategoryCard(
-    "recipes/?tag=vegan",
-    <img src={require("./../img/dinner/yellow_curry_sq.jpeg")} className="img-fluid" alt="" />,
-    "Vegan",
-    "Good for you and the planet, what more can you ask for?"
-  );
-  const glutenCard = buildCategoryCard(
-    "recipes/?tag=gluten-free",
-    <img src={require("./../img/breakfast/fritatta_sq.png")} className="img-fluid" alt="" />,
-    "Gluten-Free",
-    "I'm sorry bread hates you. Hopefully these recipes provide some solace."
-  );
-  const entreeCard = buildCategoryCard(
-    "recipes/?tag=entree",
-    <img src={require("./../img/dinner/saag_sq.jpeg")} className="img-fluid" alt="" />,
-    "Entrees",
-    "Any meal's main event. Or just an ambitious snack."
-  );
-  const sideCard = buildCategoryCard(
-    "recipes/?tag=side-snack",
-    <img src={require("./../img/breakfast/truck_stop_sq.jpg")} className="img-fluid" alt="" />,
-    "Sides/Snacks",
-    "Reliable sidekicks and little bites to get you through the day."
-  );
-  const breadCard = buildCategoryCard(
-    "recipes/?tag=bread",
-    <img src={require("./../img/bread/soda_bread_sq.jpg")} className="img-fluid" alt="" />,
-    "Breads",
-    "Nothing makes you feel more like a wizard than successfully making bread. I stand by that."
-  );
-  const dessertCard = buildCategoryCard(
-    "recipes/?tag=dessert",
-    <img src={require("./../img/dessert/banoffee_sq.jpg")} className="img-fluid" alt="" />,
-    "Desserts",
-    "Sweet bites for any time of day."
-  );
-
-  // Display home page
-  return (
-    <React.Fragment>
-      <Header isScrollable={true} />
-      <div className={sharedStyles.pageContainer}  id="scroll-top-container">
-        <section className={sharedStyles.hero}>
-          <div className={sharedStyles.heroContainer}>
-            <h3>{"Welcome"}</h3>
-            <h1>{"This is Just a Bunch of Recipes"}</h1>
-            <h2>{"Seriously. That's all this is."}</h2>
-            <a onClick={(e) => smoothScrollDown(e, "#about")} className={sharedStyles.heroButton}>
-              {"I'm listening..."}
-            </a>
-          </div>
-        </section>
-
-        <main className={styles.homeContent}>
-          <section id="about">
-            <div className={classNames(sharedStyles.topContainer, sharedStyles.expandOnSmallScreens)}>
-              <div className={styles.sectionTitle}>
-                <h2>{"About"}</h2>
-                <h3>{"Still Confused?"}</h3>
-                <p>
-                  {"I'm not here to tell you my life story."}<br/>
-                  {"I'm not here to make money on ads."}<br/>
-                  {"I'm not here to pretend either of us are professional chefs."}<br/><br/>
-                  <strong>{"I'm just here to give you clean, organized, straight-forward recipes."}</strong><br/><br/>
-                  {"If you have any suggestions for improvements or recipes to add, feel free to reach out!"}
-                </p>
-              </div>
-            </div>
-          </section>
-
-          <section className={styles.category}>
-            <div className={classNames(sharedStyles.topContainer, sharedStyles.expandOnSmallScreens)}>
-              <div className={styles.sectionTitle}>
-                <h2>{"Explore"}</h2>
-                <h3>{"Start exploring some recipes!"}</h3>
-                <p>{"Select a category to begin exploring recipes, or use the Recipes button at the top of the page to search for and filter recipes."}</p>
-              </div>
-
-              <div className="row">
-                {allCard}
-                {vegetarianCard}
-                {veganCard}
-                {glutenCard}
-                {entreeCard}
-                {sideCard}
-                {breadCard}
-                {dessertCard}
-              </div>
-            </div>
-          </section>
-
-          <section className={styles.contact}>
-            <div className={classNames(sharedStyles.topContainer, sharedStyles.expandOnSmallScreens)}>
-              <div className={styles.sectionTitle}>
-                <h2>{"Contact"}</h2>
-              </div>
-                <div className={styles.info}>
-                  <div className={styles.email}>
-                    <i className="material-icons">email</i>
-                    <h4>{"Email:"}</h4>
-                    <p>{"ebinns88@gmail.com"}</p>
-                  </div>
+    return (
+        <React.Fragment>
+            <Header isScrollable={true} />
+            <div className={sharedStyles.pageContainer}  id="scroll-top-container">
+                <div className={classNames(styles.section, sharedStyles.hero)}>
+                    <div className={sharedStyles.heroContainer}>
+                        <h3>{"Welcome"}</h3>
+                        <h1>{"This is Just a Bunch of Recipes"}</h1>
+                        <h2>{"Seriously. That's all this is."}</h2>
+                        <a onClick={(e) => smoothScrollDown(e, "#about")} className={sharedStyles.heroButton}>
+                            {"I'm listening..."}
+                        </a>
+                    </div>
                 </div>
+                <main className={styles.homeContent}>
+                    <div className={styles.section} id="about">
+                        <div className={classNames(sharedStyles.topContainer, sharedStyles.expandOnSmallScreens)}>
+                            <div className={styles.sectionTitle}>
+                                <h2>{"About"}</h2>
+                                <h3>{"Still Confused?"}</h3>
+                                <p>{"I'm not here to tell you my life story."}</p>
+                                <p>{"I'm not here to make money on ads."}</p>
+                                <p>{"I'm not here to pretend either of us are professional chefs."}</p>
+                                <p className={styles.emphasis}>
+                                    {"I'm just here to give you clean, organized, straight-forward recipes."}
+                                </p>
+                                <p>{"If you have any suggestions for improvements or recipes to add, feel free to reach out!"}</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div className={classNames(styles.section, styles.category)}>
+                        <div className={classNames(sharedStyles.topContainer, sharedStyles.expandOnSmallScreens)}>
+                            <div className={styles.sectionTitle}>
+                                <h2>{"Explore"}</h2>
+                                <h3>{"Start exploring some recipes!"}</h3>
+                                <p>{"Select a category to begin exploring recipes, or use the Recipes button at the top of the page to search for and filter recipes."}</p>
+                            </div>
+                            <div className={styles.categoryCards}>
+                                <CategoryCard
+                                    url={`/recipes`}
+                                    imageUrl={process.env.REACT_APP_CHILI_IMG_URL ?? require(`./../img/loading.png`)}
+                                    title={`All`}
+                                    subtitle={`Why limit yourself by arbitrary filters? Explore it all. Follow your heart.`}
+                                />
+                                <CategoryCard
+                                    url={`recipes/?tag=vegetarian`}
+                                    imageUrl={process.env.REACT_APP_GNOCCHI_IMG_URL ?? require(`./../img/loading.png`)}
+                                    title={`Vegetarian`}
+                                    subtitle={`Meatless options that still embrace cheese and eggs as the delicious friends they are.`}
+                                />
+                                <CategoryCard
+                                    url={`recipes/?tag=vegan`}
+                                    imageUrl={process.env.REACT_APP_YELLOW_CURRY_IMG_URL ?? require(`./../img/loading.png`)}
+                                    title={`Vegan`}
+                                    subtitle={`Good for you and the planet, what more can you ask for?`}
+                                />
+                                <CategoryCard
+                                    url={`recipes/?tag=gluten-free`}
+                                    imageUrl={process.env.REACT_APP_FRITATTA_IMG_URL ?? require(`./../img/loading.png`)}
+                                    title={`Gluten-Free`}
+                                    subtitle={`I'm sorry bread hates you. Hopefully these recipes provide some solace.`}
+                                />
+                                <CategoryCard
+                                    url={`recipes/?tag=entree`}
+                                    imageUrl={process.env.REACT_APP_SAAG_IMG_URL ?? require(`./../img/loading.png`)}
+                                    title={`Entrees`}
+                                    subtitle={`Any meal's main event. Or just an ambitious snack.`}
+                                />
+                                <CategoryCard
+                                    url={`recipes/?tag=snack`}
+                                    imageUrl={process.env.REACT_APP_TRUCK_STOP_IMG_URL ?? require(`./../img/loading.png`)}
+                                    title={`Sides/Snacks`}
+                                    subtitle={`Reliable sidekicks and little bites to get you through the day.`}
+                                />
+                                <CategoryCard
+                                    url={`recipes/?tag=bread`}
+                                    imageUrl={process.env.REACT_APP_STUFFING_BREAD_IMG_URL ?? require(`./../img/loading.png`)}
+                                    title={`Breads`}
+                                    subtitle={`Nothing makes you feel more like a wizard than successfully making bread. I stand by that.`}
+                                />
+                                <CategoryCard
+                                    url={`recipes/?tag=dessert`}
+                                    imageUrl={process.env.REACT_APP_BANOFFEE_IMG_URL ?? require(`./../img/loading.png`)}
+                                    title={`Desserts`}
+                                    subtitle={`Sweet bites for any time of day.`}
+                                />
+                            </div>
+                        </div>
+                    </div>
+                    <div className={classNames(styles.section, styles.contact)}>
+                        <div className={classNames(sharedStyles.topContainer, sharedStyles.expandOnSmallScreens)}>
+                            <div className={styles.sectionTitle}>
+                                <h2>{"Contact"}</h2>
+                            </div>
+                            <div className={styles.info}>
+                                <div className={styles.email}>
+                                    <i className="material-icons">email</i>
+                                    <h4>{"Email:"}</h4>
+                                    <p>{"ebinns88@gmail.com"}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </main>
             </div>
-          </section>
-
-        </main>
-      </div>
-      <Footer />
-    </React.Fragment>
-  );
-}
-
-function buildCategoryCard(url: string, img: JSX.Element, title: string, subtitle: string) {
-  return (
-    <div className={classNames(styles.categoryItem, "col-lg-3", "col-md-4", "col-sm-6")}>
-      <a href={url}>
-        {img}
-        <div className={styles.categoryInfo}>
-          <h4>{title}</h4>
-          <p>{subtitle}</p>
-        </div>
-      </a>
-    </div>
-  );
+            <Footer />
+        </React.Fragment>
+    );
 }

@@ -1,137 +1,156 @@
 import classNames from 'classnames';
 import { useMemo, useState } from 'react';
+import { Link } from 'react-router-dom';
 import { DietarySelectionButtonText } from '../consts';
-import { DietarySelection, Tag } from '../types';
-import { getDietarySelectionItems, getIngredients } from '../utils';
+import { DietarySelection, RecipeInfo } from '../types';
+import { getIngredientOrStepElements, getIngredients } from '../utils';
+import { ComingSoonImage } from './ComingSoonImage';
 import sharedStyles from '../styles/CommonStyles.module.scss';
 import styles from '../styles/Recipe.module.scss';
 
 export interface RecipeProps {
-  title: string;
-  ingredients: string[][];
-  steps: string[][];
-  notes: string[];
-  image: string;
-  substitutions: DietarySelection[];
-  tags: Tag[];
+    recipe: RecipeInfo;
+    imageUrl: string | undefined;
 }
 
-export const Recipe = ({ title, ingredients, steps, notes, image, substitutions, tags }: RecipeProps) => {
-  const [dietarySelection, setDietarySelection] = useState(DietarySelection.Original);
+export const Recipe = ({ recipe, imageUrl }: RecipeProps) => {
+    const { name, ingredients, steps, notes, dietaryOptions, tags } = recipe;
+    const [dietarySelection, setDietarySelection] = useState(DietarySelection.Original);
 
-  // Build maps for getting steps and ingredients for the current dietary selection
-  const ingredientsByDietarySelection = useMemo(() => {
-    return getDietarySelectionItems(ingredients, substitutions, false);
-  }, [ingredients, substitutions]);
-  const stepsByDietarySelection = useMemo(() => {
-    return getDietarySelectionItems(steps, substitutions, true);
-  }, [steps, substitutions]);
+    const image = useMemo(() => {
+        return (
+            imageUrl === undefined
+                ? <ComingSoonImage className="img-fluid" />
+                : <img src={imageUrl} alt={recipe.name} className="img-fluid" />
+        );
+    }, [imageUrl]);
 
-  // Determine which ingredients and steps to show for current dietary selection
-  const ingredientsList = useMemo(() => {
-    return ingredientsByDietarySelection.get(dietarySelection);
-  }, [dietarySelection, ingredientsByDietarySelection]);
-  const stepsList = useMemo(() => {
-    return stepsByDietarySelection.get(dietarySelection);
-  }, [dietarySelection, stepsByDietarySelection]);
+    // Build maps for getting steps and ingredients for the current dietary selection
+    const ingredientsForDietarySelection = useMemo(() => {
+        return getIngredientOrStepElements(
+            ingredients,
+            dietarySelection,
+            false,
+            'ing',
+        );
+    }, [ingredients, dietarySelection]);
 
-  // Build notes and tags for recipe
-  const notesList = useMemo(() => {
-    return notes.map((note, idx) => {
-      return <p key={idx}>{note}</p>;
-    });
-  }, [notes]);
-  const tagsList = useMemo(() => {
-    return tags.map((tag, idx) => {
-      const maybeComma = idx < tags.length - 1 ? ",\xa0" : "";
-      return (
-        <li key={idx}>
-          <a href={"../recipes?tag="+tag}>{tag}</a>
-          {maybeComma}
-        </li>
-      );
-    });
-  }, [tags]);
+    const stepsForDietarySelection = useMemo(() => {
+        return getIngredientOrStepElements(
+            steps,
+            dietarySelection,
+            true,
+            'step',
+        );
+    }, [steps, dietarySelection]);
 
-  // Build buttons to switch dietary selection
-  const dietarySelectionButtons = useMemo(() => {
-    return [DietarySelection.Original, ...substitutions].map((substitution) => {
-      return (
-        <button 
-          key={substitution}
-          className={classNames(substitution, {"selected": dietarySelection === substitution})}
-          onClick={() => setDietarySelection(substitution)}
-        >
-          {DietarySelectionButtonText.get(substitution)}
-        </button>
-      );
-    });
-  }, [substitutions, dietarySelection, setDietarySelection]);
+    // Build notes and tags for recipe
+    const notesList = useMemo(() => {
+        if (notes === undefined) {
+            return null;
+        }
+        return notes.map((note, idx) => {
+            return <p key={idx}>{note}</p>;
+        });
+    }, [notes]);
 
-  // Display recipe
-  return (
-    <div className={classNames(sharedStyles.topContainer, sharedStyles.expandOnSmallScreens)}>
-      <div className="row">
-        <div className="col-xl-12">
-          <article className={classNames(styles.entry, styles.entrySingle)}>
-            <div className={styles.entryContent}>
-              <div className="row">
-                <div className={classNames("col-12", "col-md-5", styles.noPrint)}>
-                  <img src={require("../img/"+image)} alt="" className="img-fluid" />
-                  <div className={classNames("d-md-block", "d-sm-none", styles.notes)}>
-                    <h4>{"Notes:"}</h4>
-                    {notesList}
-                  </div>
+    const tagsList = useMemo(() => {
+        if (tags === undefined) {
+            return null;
+        }
+        return tags.map((tag, idx) => {
+            const maybeComma = idx < tags.length - 1 ? ",\xa0" : "";
+            return (
+                <li key={idx}>
+                    <Link to={`../recipes?tag=${tag}`}>{tag}</Link>
+                    {maybeComma}
+                </li>
+            );
+        });
+    }, [tags]);
+
+    // Build buttons to switch dietary selection
+    const dietarySelectionButtons = useMemo(() => {
+        if (dietaryOptions === undefined || dietaryOptions.length === 0) {
+            return null;
+        }
+        return [DietarySelection.Original, ...dietaryOptions].map((option) => {
+            return (
+                <button 
+                    key={option}
+                    className={classNames(option, {"selected": dietarySelection === option})}
+                    onClick={() => setDietarySelection(option)}
+                >
+                    {DietarySelectionButtonText.get(option)}
+                </button>
+            );
+        });
+    }, [dietaryOptions, dietarySelection, setDietarySelection]);
+
+    // Display recipe
+    return (
+        <div className={classNames(sharedStyles.topContainer, sharedStyles.expandOnSmallScreens)}>
+            <div className="row">
+                <div className="col-xl-12">
+                    <article className={classNames(styles.entry, styles.entrySingle)}>
+                        <div className={styles.entryContent}>
+                            <div className="row">
+                                <div className={classNames("col-12", "col-md-5", styles.noPrint)}>
+                                    {image}
+                                    <div className={classNames("d-md-block", "d-sm-none", styles.notes)}>
+                                        <h4>{"Notes:"}</h4>
+                                        {notesList}
+                                    </div>
+                                </div>
+                                <div className={classNames("col-12", "col-md-7")}>
+                                    <div className={classNames(styles.mainColumnContent, styles.printable)} id="recipe-text">
+                                        <div className={styles.printButtons}>
+                                            <button title="Print Recipe" onClick={() => window.print()}>
+                                                <i className="material-icons">print</i>
+                                            </button>
+                                            <button title="Copy Ingredients" onClick={getIngredients}>
+                                                <i className="material-icons">list</i>
+                                            </button>
+                                        </div>
+                                        <h2>{name}</h2>
+                                        <div>
+                                            {dietarySelectionButtons}
+                                        </div>
+                                        <h3>{"Ingredients"}</h3>
+                                        <div className={classNames("row", styles.printable)} id="ingredient-list">
+                                            <div className={classNames("column", "col-12", styles.printable)}>
+                                                <ul>
+                                                    {ingredientsForDietarySelection}
+                                                </ul>
+                                            </div>
+                                        </div>
+                                        <h3>{"Steps"}</h3>
+                                        <ol>
+                                            {stepsForDietarySelection}
+                                        </ol>
+                                    </div>
+                                    <div className={styles.printOnly}>
+                                        <h3>{"Notes:"}</h3>
+                                        {notesList}
+                                    </div>
+                                    <div className={classNames("d-md-none", styles.notes, styles.stackedNotes)}>
+                                        <h3>{"Notes:"}</h3>
+                                        {notesList}
+                                    </div>
+                                    <div className={classNames(sharedStyles.entryFooter, styles.recipeFooter)}>
+                                        <div className={sharedStyles.tagsContainer}>
+                                            <i className="material-icons">local_offer</i>
+                                            <ul className={sharedStyles.tags}>
+                                                {tagsList}
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </article>
                 </div>
-                <div className={classNames("col-12", "col-md-7")}>
-                  <div className={classNames(styles.mainColumnContent, styles.printable)} id="recipe-text">
-                    <div className={styles.printButtons}>
-                      <button title="Print Recipe" onClick={() => window.print()}>
-                          <i className="material-icons">print</i>
-                      </button>
-                      <button title="Copy Ingredients" onClick={getIngredients}>
-                          <i className="material-icons">list</i>
-                      </button>
-                    </div>
-                    <h2>{title}</h2>
-                    <div>
-                      {dietarySelectionButtons}
-                    </div>
-                    <h3>{"Ingredients"}</h3>
-                    <div className={classNames("row", styles.printable)} id="ingredient-list">
-                      <div className={classNames("column", "col-12", styles.printable)}>
-                        <ul>
-                          {ingredientsList}
-                        </ul>
-                      </div>
-                    </div>
-                      <h3>{"Steps"}</h3>
-                      <ol>
-                        {stepsList}
-                      </ol>
-                  </div>
-                  <div className={styles.printOnly}>
-                    <h3>{"Notes:"}</h3>
-                    {notesList}
-                  </div>
-                  <div className={classNames("d-md-none", styles.notes, styles.stackedNotes)}>
-                    <h3>{"Notes:"}</h3>
-                    {notesList}
-                  </div>
-                  <div className={classNames(sharedStyles.entryFooter, styles.recipeFooter)}>
-                    <div className={sharedStyles.tagsContainer}>
-                      <i className="material-icons">local_offer</i>
-                      <ul className={sharedStyles.tags}>
-                        {tagsList}
-                      </ul>
-                    </div>
-                  </div>
-                </div>
-              </div>
             </div>
-          </article>
         </div>
-      </div>
-    </div>
-  );
+    );
 }

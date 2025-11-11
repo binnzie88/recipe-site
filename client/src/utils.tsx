@@ -1,487 +1,674 @@
+import { CollectionReference, doc, DocumentData, setDoc } from "firebase/firestore";
+import { FirebaseStorage, getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import $ from "jquery";
 import "jquery-ui-dist/jquery-ui";
 import React from "react";
+import { Link } from "react-router-dom";
+import {  DIFFICULTY_TAGS, RECIPE_TYPE_TAGS } from "./consts";
+import {
+    DietaryNutritionInfo,
+    DietarySelection,
+    DifficultyTags,
+    FormattedIngredientsOrStepsWithSubs,
+    IngredientOrStep,
+    IngredientOrStepInput,
+    Inputs,
+    isSubIngredientOrStepInput,
+    NutritionInfoInputs,
+    NutritionItem,
+    NutritionItemInput,
+    RecipeTypeTags,
+    RecipeInfo,
+    SubIngredientOrStepInput,
+    TagInputs,
+    Tags,
+} from "./types";
 import { LoadingRecipeCard } from "./components/LoadingRecipeCard";
-import { DietarySelectionIndices } from "./consts";
-import { DietarySelection, NestedSuggestionInput, Tag } from "./types";
 import headerStyles from "./styles/Header.module.scss";
 import recipeSearchStyles from "./styles/RecipeSearchPage.module.scss";
 
 /* ---------- General Site Utils ---------- */
 
 export function scrollPage() {
-  const recipeContainer = document.getElementById("scroll-top-container");
-  if (recipeContainer != null) {
-    if ($(window).scrollTop()) {
-      $("#header").addClass(headerStyles.headerScrolled);
-      $(".back-to-top").fadeIn("slow");
-    } else {
-      $("#header").removeClass(headerStyles.headerScrolled);
-      $(".back-to-top").fadeOut("slow");
+    const recipeContainer = document.getElementById("scroll-top-container");
+    if (recipeContainer != null) {
+        if ($(window).scrollTop()) {
+            $("#header").addClass(headerStyles.headerScrolled);
+            $(".back-to-top").fadeIn("slow");
+        } else {
+            $("#header").removeClass(headerStyles.headerScrolled);
+            $(".back-to-top").fadeOut("slow");
+        }
     }
-  }
 }
 
 export function navBackToTop() {
-  $('html, body').animate({
-    scrollTop: 0
-  }, 1250, 'easeInOutExpo');
+    $('html, body').animate({
+        scrollTop: 0
+    }, 1250, 'easeInOutExpo');
 }
 
 export function smoothScrollDown(e: React.MouseEvent<HTMLElement>, targetId: string) {
-  e.preventDefault();
-  var targetOffset = $(targetId).offset();
-  if (targetOffset != null) {
-    var scrollto = targetOffset.top;
-    var scrolled = 20;
+    e.preventDefault();
+    var targetOffset = $(targetId).offset();
+    if (targetOffset != null) {
+        var scrollto = targetOffset.top;
+        var scrolled = 20;
 
-    var header = $('#header');
-    var headerOuterHeight = header.outerHeight();
-    if (headerOuterHeight != null) {
-      scrollto -= headerOuterHeight;
-      if (!header.hasClass(headerStyles.headerScrolled)) {
-        scrollto += scrolled;
-      }
+        var header = $('#header');
+        var headerOuterHeight = header.outerHeight();
+        if (headerOuterHeight != null) {
+            scrollto -= headerOuterHeight;
+            if (!header.hasClass(headerStyles.headerScrolled)) {
+                scrollto += scrolled;
+            }
+        }
+
+        $('html, body').animate({
+            scrollTop: scrollto
+        }, 1250, 'easeInOutExpo');
+    }
+}
+
+/* ------- Data Fetch Utils --------------- */
+
+export const getImageUrl = async (
+    appStorage: FirebaseStorage,
+    recipe: RecipeInfo | undefined,
+    setRecipeImageUrl: (url: string | undefined) => void,
+    isThumbnail?: true
+) => {
+    const imageUrl = isThumbnail ? recipe?.thumbnailImageUrl : recipe?.imageUrl;
+
+    if (imageUrl === undefined) {
+        return;
     }
 
-    $('html, body').animate({
-      scrollTop: scrollto
-    }, 1250, 'easeInOutExpo');
-  }
-}
+    if (imageUrl !== undefined) {
+        const imageRef = ref(appStorage, imageUrl);
+        await getDownloadURL(imageRef)
+            .then((url) => {
+                setRecipeImageUrl(url);
+            })
+            .catch((error) => {
+                console.error("Error getting image download URL for recipe:", error);
+                setRecipeImageUrl(undefined);
+            });
+    }
+};
 
 /* ------- Recipe Search Page Utils ------- */
 
-export function getDietaryRestrictionAndSubstitute(tag: Tag) {
-  if (tag === Tag.Vegan || tag === Tag.VeganSubstitute) {
-    return [Tag.Vegan, Tag.VeganSubstitute];
-  } else if (tag === Tag.Vegetarian || tag === Tag.VegetarianSubstitute) {
-    return [Tag.Vegetarian, Tag.VegetarianSubstitute];
-  } else if (tag === Tag.GlutenFree || tag === Tag.GlutenFreeSubstitute) {
-    return [Tag.GlutenFree, Tag.GlutenFreeSubstitute];
-  } else {
-    return [];
-  }
-}
-
-export function createTagFilter(
-  tag: Tag, className: string,
-  onClick: () => void, defaultChecked: boolean, buttonText: string
-) {
-  return (
-    <li className={recipeSearchStyles.tagFilter} key={tag}>
-      <input className={className} type="checkbox" onClick={onClick} id={tag} defaultChecked={defaultChecked} />
-      <div className={recipeSearchStyles.tagFilterLabel}>
-        {buttonText}
-      </div>
-    </li>
-  );
-}
-
-export function setSelectedTags(className: string, setSelectionCallback: (value: React.SetStateAction<Tag[]>) => void) {
-  const checkboxes = Array.from(document.getElementsByClassName(className)) as HTMLInputElement[];
-  const newSelectedTags = 
-    checkboxes.filter((checkbox) => {return checkbox.checked}).map((checkbox) => checkbox.id as Tag);
-  setSelectionCallback(newSelectedTags);
-}
-
 export function isRecipeVisibleWithSelectedTags(
-  recipeTags: string[],
-  dietaryTags: Tag[],
-  difficultyTags: Tag[],
-  categoryTags: Tag[]
+    recipeTags: string[] | undefined,
+    dietaryTags: DietarySelection[],
+    difficultyTags: DifficultyTags[],
+    recipeTypeTags: RecipeTypeTags[]
 ) {
-  const matchesAllDietaryTags =
-    dietaryTags.length === 0 || 
-    dietaryTags.every((tag) => getDietaryRestrictionAndSubstitute(tag).some((t) => recipeTags.includes(t)));
-  const matchesAnyDifficultyTags =
-    difficultyTags.length === 0 ||
-    difficultyTags.some((tag) => recipeTags.includes(tag));
-  const matchesAnyCategoryTags =
-    categoryTags.length === 0 ||
-    categoryTags.some((tag) => recipeTags.includes(tag));
-  return matchesAllDietaryTags && matchesAnyDifficultyTags && matchesAnyCategoryTags;
+    const areAnyTagsSelected = dietaryTags.length > 0 || difficultyTags.length > 0 || recipeTypeTags.length > 0;
+    if (recipeTags === undefined) {
+        return !areAnyTagsSelected;
+    }
+    const matchesAllDietaryTags =
+        dietaryTags.length === 0 || 
+        dietaryTags.every((tag) => recipeTags.includes(tag));
+    const matchesAnyDifficultyTags =
+        difficultyTags.length === 0 ||
+        difficultyTags.some((tag) => recipeTags.includes(tag));
+    const matchesAnyRecipeTypeTags =
+        recipeTypeTags.length === 0 ||
+        recipeTypeTags.some((tag) => recipeTags.includes(tag));
+    return matchesAllDietaryTags && matchesAnyDifficultyTags && matchesAnyRecipeTypeTags;
 }
 
 export function getLoadingRecipeCards() {
-  let loadingCards = [];
-  for (var i = 0; i < 10; i++) {
-    loadingCards.push(<LoadingRecipeCard key={i} />);
-  }
-  return loadingCards;
+    let loadingCards = [];
+    for (var i = 0; i < 10; i++) {
+        loadingCards.push(
+            <div key={i} style={{position: 'relative', marginBottom: '15px'}}>
+                <LoadingRecipeCard />
+            </div>);
+    }
+    return loadingCards;
 }
 
 /* ---------- Recipe Page Utils ---------- */
 
-export function getDietarySelectionItems(
-  rawItems: string[][],
-  substitutions: DietarySelection[],
-  isOrdered: boolean
+function getIngredientOrStepForDietarySelection(
+    ingredientOrStep: IngredientOrStep,
+    dietarySelection: DietarySelection
 ) {
-  const itemsByDietarySelection: Map<DietarySelection, (JSX.Element | null)[]> = 
-    new Map<DietarySelection, (JSX.Element | null)[]>();
-
-  const originalIngredientsList = buildMaybeNestedList(rawItems, DietarySelection.Original, isOrdered);
-
-  itemsByDietarySelection.set(DietarySelection.Original, originalIngredientsList);
-  substitutions.forEach((dietarySelection) => {
-    const dietarySelectionItems = buildMaybeNestedList(rawItems, dietarySelection, isOrdered);
-    itemsByDietarySelection.set(dietarySelection, dietarySelectionItems);
-  });
-  return itemsByDietarySelection;
+    if (dietarySelection === DietarySelection.GlutenFree && ingredientOrStep.glutenFreeSub !== undefined) {
+        return ingredientOrStep.glutenFreeSub;
+    }
+    if (dietarySelection === DietarySelection.Vegan && ingredientOrStep.veganSub !== undefined) {
+        return ingredientOrStep.veganSub;
+    }
+    if (dietarySelection === DietarySelection.Vegetarian && ingredientOrStep.vegetarianSub !== undefined) {
+        return ingredientOrStep.vegetarianSub;
+    }
+    return ingredientOrStep.item;
 }
 
+export function getIngredientOrStepElements(
+    items: IngredientOrStep[],
+    dietarySelection: DietarySelection,
+    isOrdered: boolean,
+    listKey: string,
+    parentIdxString?: string,
+) {
+    return items.reduce((filteredElements, item, idx) => {
+        const itemForDietarySelection = getIngredientOrStepForDietarySelection(item, dietarySelection);
+        if (itemForDietarySelection !== 'remove') {
+            const itemIdxString = parentIdxString ? `${parentIdxString}-${idx}` : `${idx}`
+            const itemKey = `${listKey}-${itemIdxString}`;
+            if (item.subItems !== undefined && item.subItems.length !== 0) {
+                // Add nested list
+                const subItemsList = 
+                    getIngredientOrStepElements(item.subItems, dietarySelection, isOrdered, listKey, itemIdxString);
+                filteredElements.push(isOrdered ? (
+                    <li key={idx}>
+                      {itemForDietarySelection}
+                      <ol type="a">
+                        {subItemsList}
+                      </ol>
+                    </li>
+                  ) : (
+                    <li key={idx}>
+                      {itemForDietarySelection}
+                      <ul>
+                        {subItemsList}
+                      </ul>
+                    </li>
+                  )
+                );
+            } else {
+                filteredElements.push(
+                    <li key={idx}>
+                      {itemForDietarySelection}
+                    </li>
+                );
+            }
+        }
+        return filteredElements;
+    }, [] as JSX.Element[]);
+}
+
+// TODO: UPDATE IMPLEMENTATION?
 export function getIngredients() {
-  var ingredients = document.getElementById('ingredient-list')?.innerText;
-  var tmp = document.createElement('textarea');
-  
-  if (ingredients != null) {
-    tmp.value = ingredients;
-    document.body.appendChild(tmp);
-    tmp.select();
-    document.execCommand('copy');
-    document.body.removeChild(tmp);
-    window.alert("Copied the Following Ingredients: \n"+ingredients);
-  } else {
-    window.alert("Failed to copy ingredients. Please try again.");
-  }
+    var ingredients = document.getElementById('ingredient-list')?.innerText;
+    var tmp = document.createElement('textarea');
+    
+    if (ingredients != null) {
+        tmp.value = ingredients;
+        document.body.appendChild(tmp);
+        tmp.select();
+        document.execCommand('copy');
+        document.body.removeChild(tmp);
+        window.alert("Copied the Following Ingredients: \n"+ingredients);
+    } else {
+        window.alert("Failed to copy ingredients. Please try again.");
+    }
 }
 
 /* ----- Recipe Suggestion Page Utils ----- */
+export function generateRandomIdString(length: number): string {
+    const possibleChars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    let id = '';
+    for (let i = 0; i < length; i++) {
+        const newChar = possibleChars.charAt(Math.floor(Math.random() * possibleChars.length));
+        id = `${id}${newChar}`;
+    }
+    return id;
+}
 
-export function addInput(
-  inputs: NestedSuggestionInput[],
-  setInputs: React.Dispatch<React.SetStateAction<NestedSuggestionInput[]>>,
-  parentIdx?: number,
+export function buildFormattedRecipeWithoutImage(
+    data: Inputs,
+    formattedIngredientsWithSubs: FormattedIngredientsOrStepsWithSubs,
+    formattedStepsWithSubs: FormattedIngredientsOrStepsWithSubs,
+    dietaryOptions: DietarySelection[],
+    tags: Tags[],
+    nutritionInfo: DietaryNutritionInfo | undefined,
+    imageUrl?: string,
 ) {
-  if (parentIdx == null) {
-    // add top level input
-    setInputs([...inputs, { inputText: "", substitutions: new Map<Tag, string>(), subInputs:[] }]);
-  } else {
-    // add sub input
-    const parentInput = inputs[parentIdx];
-    if (parentInput != null) {
-      const newInputs = [...inputs];
-      newInputs[parentIdx].subInputs = [
-        ...parentInput.subInputs,
-        { subInputText: "", substitutions: new Map<Tag, string>() }
-      ];
-      setInputs(newInputs);
+    const recipe: Omit<RecipeInfo, 'id'> = {
+        name: data.name,
+        ingredients: formattedIngredientsWithSubs.items,
+        steps: formattedStepsWithSubs.items,
+    };
+    if (data.description !== '') {
+        recipe.description = data.description;
     }
-  }
+    if (data.time !== '') {
+        recipe.time = data.time;
+    }
+    if (dietaryOptions.length > 0) {
+        recipe.dietaryOptions = dietaryOptions;
+    }
+    if (data.servingSize !== '') {
+        recipe.servingSize = data.servingSize;
+    }
+    if (data.numServings !== '') {
+        recipe.numServings = data.numServings;
+    }
+    if (tags.length > 0) {
+        recipe.tags = tags;
+    }
+    if (nutritionInfo !== undefined) {
+        recipe.nutritionInfo = nutritionInfo;
+    }
+    if (data.notes.length > 0) {
+        recipe.notes = data.notes.map((note) => note.note);
+    }
+    if (imageUrl !== undefined) {
+        recipe.imageUrl = imageUrl;
+    }
+
+    return recipe;
 }
 
-export function addInputSubstitution(
-  inputs: NestedSuggestionInput[],
-  setInputs: React.Dispatch<React.SetStateAction<NestedSuggestionInput[]>>,
-  diet: Tag,
-  idx: number,
-  parentIdx?: number
+export async function submitRecipe(
+    recipeId: string,
+    recipeWithoutImage: Omit<RecipeInfo, 'id'>,
+    sourceImageBlob: Blob | undefined,
+    thumbnailImageBlob: Blob | undefined,
+    appStorage: FirebaseStorage | undefined,
+    recipesCollection: CollectionReference<DocumentData, DocumentData>
 ) {
-  if (parentIdx == null) {
-    // add substitution to top level input
-    const input = inputs[idx];
-    if (input != null) {
-      const newInputs = [...inputs];
-      newInputs[idx].substitutions.set(diet, "");
-      setInputs(newInputs);
+    const recipe = {...recipeWithoutImage};
+    if (appStorage === undefined) {
+        console.log("Cannot access image storage, saving recipe without image");
+    } else {
+        if (sourceImageBlob !== undefined) {
+            console.log("ADDING IMAGE URL");
+            const sourceImageUrl = await uploadImageAndGetUrl(sourceImageBlob, recipeId, appStorage);
+            console.log("SOURCE IMAGE?", sourceImageUrl);
+            if (sourceImageUrl !== undefined) {
+                console.log("GOT SOURCE IMAGE");
+                recipe.imageUrl = sourceImageUrl;
+
+                // Only add a thumbnail if the main image uploaded successfully
+                if (thumbnailImageBlob !== undefined) {
+                    console.log("ADDING THUMBNAIL IMAGE");
+                    const thumbnailImageUrl =
+                        await uploadImageAndGetUrl(thumbnailImageBlob, `${recipeId}_thumbnail`, appStorage);
+                    console.log("THUMBNAIL IMAGE?", thumbnailImageUrl);
+                    if (thumbnailImageUrl !== undefined) {
+                        recipe.thumbnailImageUrl = thumbnailImageUrl;
+                    } else {
+                        console.log("Could not process thumbnail image, uploading recipe without thumbnail.");
+                    }
+                }
+            } else {
+                console.log("Could not process main image, uploading recipe without image.");
+            }
+        }
     }
-  } else {
-    // add substitution to sub level input
-    const parentInput = inputs[parentIdx];
-    if (parentInput != null) {
-      const subInput = parentInput.subInputs[idx];
-      if (subInput != null) {
-        const newInputs = [...inputs];
-        const newSubInputs = [...parentInput.subInputs];
-        newSubInputs[idx].substitutions.set(diet, "");
-        newInputs[parentIdx].subInputs = newSubInputs;
-        setInputs(newInputs);
-      }
-    }
-  } 
+    return await uploadRecipe(recipesCollection, recipe, recipeId);
 }
 
-export function deleteInput(
-  inputs: NestedSuggestionInput[],
-  setInputs: React.Dispatch<React.SetStateAction<NestedSuggestionInput[]>>,
-  idx: number,
-  parentIdx?: number
+export function getFormattedIngredientsOrSteps(inputs: (IngredientOrStepInput | SubIngredientOrStepInput)[]) {
+    const formattedInputs = inputs.reduce((formattedItems, input) => {
+        const { item, glutenFreeSub, veganSub, vegetarianSub } = input;
+        if (item !== '') {
+            const newItem: IngredientOrStep = { item };
+            if (glutenFreeSub !== '') {
+                newItem.glutenFreeSub = glutenFreeSub;
+                formattedItems.hasGlutenFreeSub = true;
+            }
+            if (veganSub !== '') {
+                newItem.veganSub = veganSub;
+                formattedItems.hasVeganSub = true;
+            }
+            if (vegetarianSub !== '') {
+                newItem.vegetarianSub = vegetarianSub;
+                formattedItems.hasVegetarianSub = true;
+            }
+            if (isSubIngredientOrStepInput(input) && input.subItems.length > 0) {
+                const formattedSubItems = getFormattedIngredientsOrSteps(input.subItems);
+                if (formattedSubItems.items.length > 0) {
+                    newItem.subItems = formattedSubItems.items;
+                }
+                formattedItems.hasGlutenFreeSub = formattedItems.hasGlutenFreeSub || formattedSubItems.hasGlutenFreeSub;
+                formattedItems.hasVeganSub = formattedItems.hasVeganSub || formattedSubItems.hasVeganSub;
+                formattedItems.hasVegetarianSub = formattedItems.hasVegetarianSub || formattedSubItems.hasVegetarianSub;
+            }
+            formattedItems.items.push(newItem);
+        }
+        return formattedItems;
+    }, {
+        items: [],
+        hasGlutenFreeSub: false,
+        hasVeganSub: false,
+        hasVegetarianSub: false,
+    } as FormattedIngredientsOrStepsWithSubs);
+    return formattedInputs;
+}
+
+export function getFormattedTags(tags: TagInputs) {
+    return [...DIFFICULTY_TAGS, ...RECIPE_TYPE_TAGS].reduce((checkedTags, tag) => {
+        if (tags[tag] === true) {
+            checkedTags.push(tag as Tags);
+        }
+        return checkedTags;
+    }, [] as Tags[]);
+}
+
+export function getFormattedNutritionInfo(nutritionInfo: NutritionInfoInputs, dietaryOptions: DietarySelection[]) {
+    const formattedNutritionInfo: DietaryNutritionInfo = {};
+
+    const formattedCalories = getFormattedNutritionItem(nutritionInfo.calories, dietaryOptions);
+    const formattedProtein = getFormattedNutritionItem(nutritionInfo.proteinG, dietaryOptions);
+    const formattedFiber = getFormattedNutritionItem(nutritionInfo.fiberG, dietaryOptions);
+    const formattedFat = getFormattedNutritionItem(nutritionInfo.fatG, dietaryOptions);
+    const formattedSodium = getFormattedNutritionItem(nutritionInfo.sodiumMg, dietaryOptions);
+    const formattedSugar = getFormattedNutritionItem(nutritionInfo.sugarG, dietaryOptions);
+
+    if (
+        !formattedCalories
+        && !formattedProtein
+        && !formattedFiber
+        && !formattedFat
+        && !formattedSodium
+        && !formattedSugar
+    ) {
+        return undefined;
+    }
+
+    if (formattedCalories) {
+        formattedNutritionInfo.calories = formattedCalories;
+    }
+
+    if (formattedProtein) {
+        formattedNutritionInfo.proteinG = formattedProtein;
+    }
+
+    if (formattedFiber) {
+        formattedNutritionInfo.fiberG = formattedFiber;
+    }
+
+    if (formattedFat) {
+        formattedNutritionInfo.fatG = formattedFat;
+    }
+
+    if (formattedSodium) {
+        formattedNutritionInfo.sodiumMg = formattedSodium;
+    }
+
+    if (formattedSugar) {
+        formattedNutritionInfo.sugarG = formattedSugar;
+    }
+
+    return formattedNutritionInfo;
+}
+
+export async function getCompressedImageBlob(imageFile: File, isThumbnail: boolean) {
+    try {
+        return new Promise<Blob | undefined>((resolve, reject) => {
+            const reader = new FileReader();
+            reader.readAsDataURL(imageFile);
+
+            reader.onload = (event) => {
+                const img = new Image();
+                img.src = event.target?.result as string;
+
+                img.onload = async () => {
+                    const canvas = document.createElement('canvas');
+
+                    // if image is not a thumbnail, scale it down as needed using its original dimensions
+                    if (!isThumbnail) {
+                        const MAX_WIDTH_OR_HEIGHT = 800;
+                        let width = img.width;
+                        let height = img.height;
+
+                        if (width > height) {
+                            if (width > MAX_WIDTH_OR_HEIGHT) {
+                                height *= MAX_WIDTH_OR_HEIGHT / width;
+                                width = MAX_WIDTH_OR_HEIGHT;
+                            }
+                        } else {
+                            if (height > MAX_WIDTH_OR_HEIGHT) {
+                                width *= MAX_WIDTH_OR_HEIGHT / height;
+                                height = MAX_WIDTH_OR_HEIGHT;
+                            }
+                        }
+
+                        canvas.width = width;
+                        canvas.height = height;
+                        const ctx = canvas.getContext('2d');
+                        if (ctx === null) {
+                            resolve(undefined);
+                            return;
+                        }
+
+                        ctx.drawImage(img, 0, 0, width, height);
+                    } else {
+                        // If image is a thumbnail, crop and scale to a small square centered in the image
+                        const WIDTH_AND_HEIGHT = 400;
+
+                        let srcImageCropWidth = img.width;
+                        let srcImageCropHeight = img.height;
+
+                        let srcX = 0;
+                        let srcY = 0;
+
+                        if (srcImageCropWidth > srcImageCropHeight) {
+                            srcImageCropWidth = srcImageCropHeight;
+                            srcX = (img.width - srcImageCropHeight) / 2;
+                        } else {
+                            srcImageCropHeight = srcImageCropWidth;
+                            srcY = (img.height - srcImageCropWidth) / 2;
+                        }
+
+                        const canvasWidth = WIDTH_AND_HEIGHT;
+                        const canvasHeight = WIDTH_AND_HEIGHT;
+
+                        canvas.width = canvasWidth;
+                        canvas.height = canvasHeight;
+                        const ctx = canvas.getContext('2d');
+                        if (ctx === null) {
+                            return;
+                        }
+
+                        ctx.drawImage(
+                            img,
+                            srcX,
+                            srcY,
+                            srcImageCropWidth,
+                            srcImageCropHeight,
+                            0,
+                            0,
+                            canvasWidth,
+                            canvasHeight
+                        );
+                    }
+
+                    // Get the compressed image as a Blob
+                    canvas.toBlob((blob) => {
+                        if (blob !== null) {
+                            resolve(blob);
+                        } else {
+                            resolve(undefined);
+                        }
+                    }, 'image/jpeg');
+                };
+
+                img.onerror = (error) => {
+                    console.log("Error loading image:", error);
+                    resolve(undefined);
+                };
+            };
+
+            reader.onerror = (error) => reject(error);
+        });
+    } catch (error) {
+        console.error("Error loading image:", error);
+        return undefined;
+    }
+}
+
+export async function getDefaultThumbnailCrop(
+    imageFile: File,
+    setCroppedImageUrl: React.Dispatch<React.SetStateAction<string | undefined>>,
 ) {
-  if (parentIdx == null) {
-    // delete top level input
-    const newInputs = [...inputs];
-    newInputs.splice(idx, 1);
-    setInputs(newInputs);
-  } else {
-    // delete sub input
-    const parentInput = inputs[parentIdx];
-    if (parentInput != null) {
-      const newSubInputs = [...parentInput.subInputs];
-      newSubInputs.splice(idx, 1);
-      const newInputs = [...inputs];
-      newInputs[parentIdx] = {
-        inputText: parentInput.inputText,
-        substitutions: parentInput.substitutions,
-        subInputs: newSubInputs,
-      };
-      setInputs(newInputs);
-    }
-  }
-}
+    try {
+        return new Promise<string | undefined>((resolve, reject) => {
+            const reader = new FileReader();
+            reader.readAsDataURL(imageFile);
 
-export function deleteInputSubstitution (
-  inputs: NestedSuggestionInput[],
-  setInputs: React.Dispatch<React.SetStateAction<NestedSuggestionInput[]>>,
-  diet: Tag,
-  idx: number,
-  parentIdx?: number,
-) {
-  if (parentIdx == null) {
-    // delete top level input substitution
-    const input = inputs[idx];
-    if (input != null) {
-      const newInputs = [...inputs];
-      newInputs[idx].substitutions.delete(diet);
-      setInputs(newInputs);
-    }
-  } else {
-    // delete sub input substitution
-    const parentInput = inputs[parentIdx];
-    if (parentInput != null) {
-      const newSubInputs = [...parentInput.subInputs];
-      newSubInputs[idx].substitutions.delete(diet);
-      const newInputs = [...inputs];
-      newInputs[parentIdx] = {
-        inputText: parentInput.inputText,
-        substitutions: parentInput.substitutions,
-        subInputs: newSubInputs,
-      };
-      setInputs(newInputs);
-    }
-  }
-}
+            reader.onload = (event) => {
+                const img = new Image();
+                img.src = event.target?.result as string;
 
-export function updateInput(
-  inputs: NestedSuggestionInput[],
-  setInputs: React.Dispatch<React.SetStateAction<NestedSuggestionInput[]>>,
-  element: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
-  idx: number,
-  parentIdx?: number
-) {
-  if (parentIdx == null) {
-    // update top level input
-    const input = inputs[idx];
-    if (input != null) {
-      const newInputs = [...inputs];
-      newInputs[idx].inputText = element.target.value;
-      setInputs(newInputs);
-    }
-  } else {
-    // update sub input
-    const parentInput = inputs[parentIdx];
-    if (parentInput != null) {
-      const subInput = parentInput.subInputs[idx];
-      if (subInput != null) {
-        const newInputs = [...inputs];
-        const newSubInputs = [...parentInput.subInputs];
-        newSubInputs[idx].subInputText = element.target.value;
-        newInputs[parentIdx].subInputs = newSubInputs;
-        setInputs(newInputs);
-      }
-    }
-  }
-}
+                img.onload = async () => {
+                    // If user selected an image, shrink it, then upload it, then save recipe with resulting imageUrl
+                    const WIDTH_AND_HEIGHT = 400;
 
-export function updateInputSubstitution(
-  inputs: NestedSuggestionInput[],
-  setInputs: React.Dispatch<React.SetStateAction<NestedSuggestionInput[]>>,
-  diet: Tag,
-  element: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
-  idx: number,
-  parentIdx?: number,
-) {
-  if (parentIdx == null) {
-    // update top level input substitutions
-    const input = inputs[idx];
-    if (input != null) {
-      const newInputs = [...inputs];
-      newInputs[idx].substitutions.set(diet, element.target.value);
-      setInputs(newInputs);
+                    let srcImageCropWidth = img.width;
+                    let srcImageCropHeight = img.height;
+
+                    let srcX = 0;
+                    let srcY = 0;
+
+                    if (srcImageCropWidth > srcImageCropHeight) {
+                        srcImageCropWidth = srcImageCropHeight;
+                        srcX = (img.width - srcImageCropHeight) / 2;
+                    } else {
+                        srcImageCropHeight = srcImageCropWidth;
+                        srcY = (img.height - srcImageCropWidth) / 2;
+                    }
+
+                    const canvasWidth = WIDTH_AND_HEIGHT;
+                    const canvasHeight = WIDTH_AND_HEIGHT;
+
+                    const canvas = document.createElement('canvas');
+                    canvas.width = canvasWidth;
+                    canvas.height = canvasHeight;
+                    const ctx = canvas.getContext('2d');
+                    if (ctx === null) {
+                        return;
+                    }
+
+                    ctx.drawImage(
+                        img,
+                        srcX,
+                        srcY,
+                        srcImageCropWidth,
+                        srcImageCropHeight,
+                        0,
+                        0,
+                        canvasWidth,
+                        canvasHeight
+                    );
+
+                    // Get the compressed image as a Blob
+                    const imageBlob = await new Promise<Blob | undefined>((resolveBlob) => {
+                        canvas.toBlob((blob) => {
+                        if (blob !== null) {
+                            resolveBlob(blob);
+                        } else {
+                            resolveBlob(undefined);
+                        }
+                        }, 'image/jpeg');
+                    });
+
+                    if (imageBlob !== undefined) {
+                        setCroppedImageUrl(URL.createObjectURL(imageBlob));
+                    } else {
+                        console.error("Could not crop thumbnail image due to a processing error.");
+                    }
+                };
+
+                img.onerror = (error) => {
+                    console.log("Error loading thumbnail image:", error);
+                };
+            };
+        });
+    } catch (error) {
+        console.error("Error uploading image:", error);
     }
-  } else {
-    // update sub input substitutions
-    const parentInput = inputs[parentIdx];
-    if (parentInput != null) {
-      const subInput = parentInput.subInputs[idx];
-      if (subInput != null) {
-        const newInputs = [...inputs];
-        const newSubInputs = [...parentInput.subInputs];
-        newSubInputs[idx].substitutions.set(diet, element.target.value);
-        newInputs[parentIdx].subInputs = newSubInputs;
-        setInputs(newInputs);
-      }
-    }
-  }
-}
-
-export function getFormattedSuggestionInputs(ingredients: NestedSuggestionInput[], steps: NestedSuggestionInput[], notes: NestedSuggestionInput[]) {
-  const id = `"` + cleanRawInput($("input#recipeId").val()) + `", `;
-  const title = `"` + cleanRawInput($("input#title").val()) + `", `;
-  const subtitle = `"` + cleanRawInput($("input#subtitle").val()) + `", `;
-  const time = `"` + cleanRawInput($("input#time").val()) + `", `;
-  const imageUrl = `"` + cleanRawInput($("input#imageUrl").val()) + `", `;
-
-  let formattedTags = `'[`;
-  const tags = Array.from($(".tag:checkbox:checked").map(function () { return $(this).val(); }));
-  tags.forEach((tag, idx) => {
-    formattedTags += `"` + tag + `"`;
-    if (idx < tags.length - 1) {
-      formattedTags += `, `;
-    }
-  });
-  formattedTags += `]'`;
-
-  const formattedIngredients = formatNestedInputs(ingredients) + `, `;
-  const formattedSteps = formatNestedInputs(steps) + `, `;
-  let formattedNotes = `'[`;
-  notes.forEach((input, idx) => {
-    formattedNotes += `"` + cleanNestedInput(input.inputText) + `"`;
-    if (idx < notes.length - 1) {
-      formattedNotes += `, `;
-    }
-  });
-  formattedNotes += `]', `;
-
-  return { id, title, subtitle, time, imageUrl, formattedIngredients, formattedSteps, formattedNotes, formattedTags };
-}
-
-export function copyRecipe(recipeString: string) {
-  var tmp = document.createElement('textarea');
-  tmp.value = recipeString;
-  document.body.appendChild(tmp);
-  tmp.select();
-  document.execCommand('copy');
-  document.body.removeChild(tmp);
-  window.alert("Copied the Following Ingredients: \n"+recipeString);
 }
 
 /* ---- Utils Only Used in Other Utils ---- */
 
+async function uploadImageAndGetUrl(imageBlob: Blob, fileName: string, appStorage: FirebaseStorage | undefined) {
+    if (appStorage === undefined) {
+        console.log("Cannot upload image, saving recipe without image");
+        return undefined;
+    }
+    try {
+        return new Promise<string | undefined>(async (resolve) => {
+            const storageRef = ref(appStorage, `recipeImages/${fileName}`);
+                
+            const uploadResult = await uploadBytes(storageRef, imageBlob);
+
+            console.log("Uploaded image successfully!", uploadResult);
+            resolve(getDownloadURL(uploadResult.ref));
+        });
+    } catch (error) {
+        console.error("Error uploading image:", error);
+        return undefined;
+    }
+}
+
+async function uploadRecipe(
+    recipesCollection: CollectionReference<DocumentData, DocumentData>,
+    recipe: Omit<RecipeInfo, 'id'>,
+    recipeId: string,
+) {
+    try {
+        const docRef = doc(recipesCollection, recipeId);
+        await setDoc(docRef, recipe);
+        console.log("Recipe successfully added with id: ", recipeId);
+        return true;
+    } catch (e) {
+        console.error("Error adding document: ", e);
+        return false;
+    }
+}
+
+function getFormattedNutritionItem(nutritionItem: NutritionItemInput, dietaryOptions: DietarySelection[]) {
+    if (
+        nutritionItem.original === undefined
+        && nutritionItem.glutenFree === undefined
+        && nutritionItem.vegan === undefined
+        && nutritionItem.vegetarian === undefined
+    ) {
+        return undefined;
+    }
+
+    const formattedNutritionItem: NutritionItem = {};
+    if (nutritionItem.original) {
+        formattedNutritionItem.original = nutritionItem.original;
+    }
+    if (nutritionItem.glutenFree && dietaryOptions.includes(DietarySelection.GlutenFree)) {
+        formattedNutritionItem.glutenFree = nutritionItem.glutenFree;
+    }
+    if (nutritionItem.vegan && dietaryOptions.includes(DietarySelection.Vegan)) {
+        formattedNutritionItem.vegan = nutritionItem.vegan;
+    }
+    if (nutritionItem.vegetarian && dietaryOptions.includes(DietarySelection.Vegetarian)) {
+        formattedNutritionItem.vegetarian = nutritionItem.vegetarian;
+    }
+    return formattedNutritionItem;
+}
+
+// TODO: figure out a way to get this working to allow links in recipe steps/ingredients
 export function maybeConvertStringWithLink(item: string) {
-  if (item.includes("<a href")) {
-    // Item contains a link, return an element that displays that link
-    const url = item.split("href=\"")[1].split("\"")[0];
-    const textBeforeUrl = item.split("<a href")[0];
-    const urlText = item.split("\">")[1].split("</a>")[0];
-    const textAfterUrl = item.split("</a>")[1];
-    return (
-      <React.Fragment>
-        <span>{textBeforeUrl}</span>
-        <a href={url}>{urlText}</a>
-        <span>{textAfterUrl}</span>
-      </React.Fragment>
-    );
-  } else {
-    return item;
-  }
-}
-
-export function getItemForDietarySelection(rawItem: string, index: number) {
-  if (rawItem.includes("///")) {
-    const variations = rawItem.split("///");
-    const originalItem = variations[0];
-    const maybeItem = variations[index];
-    return maybeItem === "omit" 
-      ? null 
-      : maybeConvertStringWithLink(
-          (index === 0 || maybeItem === null || maybeItem === "none")
-            ? originalItem
-            : maybeItem
+    if (item.includes("<a href")) {
+        // Item contains a link, return an element that displays that link
+        const url = item.split("href=\"")[1].split("\"")[0];
+        const textBeforeUrl = item.split("<a href")[0];
+        const urlText = item.split("\">")[1].split("</a>")[0];
+        const textAfterUrl = item.split("</a>")[1];
+        return (
+            <React.Fragment>
+                <span>{textBeforeUrl}</span>
+                <Link to={url}>{urlText}</Link>
+                <span>{textAfterUrl}</span>
+            </React.Fragment>
         );
-  } else {
-    return maybeConvertStringWithLink(rawItem);
-  }
-}
-
-export function buildMaybeNestedList(items: string[][], dietarySelection: DietarySelection, isOrdered: boolean) {
-  const indexOfDietarySelection = DietarySelectionIndices.get(dietarySelection) ?? 0;
-  return items.map((subItems, idx) => {
-    if (subItems.length === 1) {
-      const rawItem = subItems[0];
-      const itemForDietarySelection = getItemForDietarySelection(rawItem, indexOfDietarySelection);
-      return itemForDietarySelection != null ? <li key={idx}>{itemForDietarySelection}</li> : null;
-    } else if (subItems.length > 1) {
-      const rawTopLevelItem = subItems[0];
-      const topLevelItem = getItemForDietarySelection(rawTopLevelItem, indexOfDietarySelection);
-      if (topLevelItem != null) {
-        const subItemsList = subItems.map((rawSubItem, i) => {
-          if (i === 0) {
-            return null;
-          } else {
-            const subItem = getItemForDietarySelection(rawSubItem, indexOfDietarySelection);
-            return subItem != null ? <li key={i}>{subItem}</li> : null;
-          }
-        }).filter((element) => element != null);
-        return isOrdered ? (
-          <li key={idx}>
-            {topLevelItem}
-            <ol type="a">
-              {subItemsList}
-            </ol>
-          </li>
-        ) : (
-          <li key={idx}>
-            {topLevelItem}
-            <ul>
-              {subItemsList}
-            </ul>
-          </li>
-        );
-      } else {
-        return null;
-      }
     } else {
-      return null;
+        return item;
     }
-  });
-}
-
-export function formatNestedInputs(inputs: NestedSuggestionInput[]) {
-  let outputString = `'[`;
-  inputs.forEach((input, idx) => {
-    outputString += (`["` + createInputTextWithSubstitutions(input.inputText, input.substitutions) + `"`);
-    input.subInputs.forEach((subInput) => {
-      outputString += (`, "` + createInputTextWithSubstitutions(subInput.subInputText, subInput.substitutions) + `"`)
-    });
-    outputString += (`]`);
-    if (idx < inputs.length - 1) {
-      outputString += (`, `);
-    }
-  });
-  outputString += `]'`;
-  return outputString;
-}
-
-export function createInputTextWithSubstitutions(inputText: string, substitutions: Map<Tag, string>) {
-  if (substitutions.size === 0) {
-    return cleanNestedInput(inputText);
-  } else {
-    const vegetarianSub = substitutions.get(Tag.Vegetarian) ?? "none";
-    const veganSub = substitutions.get(Tag.Vegan) ?? "none";
-    const glutenFreeSub = substitutions.get(Tag.GlutenFree) ?? "none";
-    return cleanNestedInput(inputText + "///" + vegetarianSub + "///" + veganSub + "///" + glutenFreeSub);
-  }
-}
-
-export function cleanRawInput(inputVal: string | number | string[] | undefined) {
-  if (inputVal != null) {
-    return (inputVal.toString().replaceAll(`"`, `\\"`));
-  } else {
-    return "";
-  }
-}
-
-export function cleanNestedInput(inputText: string) {
-  return inputText.replaceAll("'", "\\'").replaceAll('"', '\\\\"');
 }
