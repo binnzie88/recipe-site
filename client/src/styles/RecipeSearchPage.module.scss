@@ -33,12 +33,13 @@
 
                     .sidebar {
                         padding: 15px;
-                        margin: 0 0 50px 0;
+                        margin: 0 5px 50px 5px;
                         box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
                         background-color: #fff;
                         max-height: 100%;
                         display: flex;
                         flex-direction: column;
+                        overflow: auto;
 
                         .sidebarTitle {
                             font-size: 20px;
@@ -47,45 +48,21 @@
                             margin: 0 0 15px 0;
                             color: #493c3e;
                             position: relative;
-
-                            &.sidebarTitleSm {
-                                margin: 0 10px 0 0;
-                                align-self: center;
-                            }
                         }
 
                         .sidebarSubtitle {
                             font-size: 16px;
                             font-weight: 700;
-                            margin: 0 0 10px 0;
+                            margin: 0;
                             padding: 0 10px 0 0;
                             color: #493c3e;
                             position: relative;
                         }
 
-                        .sidebarItem {
-                            margin-top: 15px;
-
-                            &.d-lg-block {
-                                overflow: auto;
-                            }
-
-                            .tagCheckboxes {
-                                padding-left: 10px;
-                            
-                                .tagFilter {
-                                    display: flex;
-                                    
-                                    .tagFilterLabel {
-                                        color: black;
-                                        padding-left: 10px;
-                                    }
-                                }
-                            }
-                        }
-
                         .searchContainer {
                             display: flex;
+                            flex-direction: column;
+                            margin-bottom: 15px;
 
                             .searchForm {
                                 background: #fff;
@@ -131,6 +108,7 @@
                         }
 
                         .filterButton {
+                            display: none;
                             background: var(--secondary-color);
                             color: #fff;
                             margin: 0 0 0 10px;
@@ -142,32 +120,71 @@
                             }
                         }
 
-                        .filtersSm {
-                            ul {
-                                list-style: none;
-                                padding: 0;
-
-                                a {
-                                    color: #655356;
-
-                                    &:hover {
-                                        color: var(--secondary-color);
-                                    }
+                        .collapsibleFilters {
+                            &.shownLg {
+                                display: flex;
+                                flex-direction: column;
+                        
+                                .filtersSection {
+                                    padding-left: 10px;
                                 }
+                            }
+                            
+                            &.hiddenLg {
+                                display: none;
+                                overflow: hidden;
+                                max-height: 0;
+                                transition: max-height .5s ease-in-out;
+                            
+                                &.expanded {
+                                    max-height: 500px;
+                                }
+                        
+                                .expandedFiltersContainer {
+                                    display: flex;
+                                    flex-direction: row;
+                                    justify-content: space-between;
+                                    align-self: center;
+                                    width: 80%;
+                                    padding-top: 15px;
+                                }
+                            }
+                        
+                            .filtersSectionLabel {
+                                display: block;
+                            }
+                        
+                            .filtersSection {
+                                display: flex;
+                                flex-direction: column;
 
-                                li + li {
-                                    padding-top: 10px;
+                                .tagCheckboxes {
+                                    padding-left: 10px;
+                                
+                                    .tagFilter {
+                                        display: flex;
+                                        
+                                        .tagFilterLabel {
+                                            color: black;
+                                            padding-left: 10px;
+                                        }
+                                    }
                                 }
                             }
                         }
                     }
     
                     .filterHeaderRow {
+                        display: flex;
+                        flex-direction: row;
                         align-items: center;
+                        margin-bottom: 10px;
                     
                         .tooltipAnchor {
                             position: relative;
-                            display: inline-block;
+                            display: flex;
+                            align-self: center;
+                            cursor: default;
                         
                             .tooltipText {
                                 visibility: hidden;
@@ -180,7 +197,7 @@
                                 padding: 5px;
                                 position: absolute;
                                 z-index: 1;
-                                top: 100%;
+                                top: 20px;
                                 left: 50%;
                                 margin-left: -65px;
                         
@@ -209,7 +226,6 @@
                         .infoIcon {
                             color: #525252;
                             font-size: 16px;
-                            margin-bottom: 10px;
                         }
                     }
                 }
@@ -245,9 +261,25 @@
                                 background-color: #fff;
                                 width: 100%;
                                 padding: 10px;
-        
-                                .imageContainer {
+
+                                .thumbnailContainer {
+                                    display: flex;
+                                    flex-direction: row;
+                                    flex-shrink: 0;
                                     width: 20%;
+                                
+                                    .thumbnailWrapper {
+                                        width: 0px;
+                                
+                                        &.visibleImage {
+                                            width: 100%;
+                                        }
+                                    }
+                                
+                                    .thumbnail {
+                                        max-width: 100%;
+                                        max-height: 100%;
+                                    }
                                 }
         
                                 .entryInfoContainer {
@@ -319,40 +351,63 @@
                 }
             }
     
-            @media only screen and (max-width : 990px) {
+            @media (max-width : 990px) {
                 .recipesContainer {
                     flex-direction: column;
+                    overflow: auto;
                 
                     .sidebarSection {
                         flex: 0;
                         margin-right: 0;
+
+                        .sidebar {
+                            overflow: visible;
+
+                            .sidebarTitle {
+                                margin: 0 10px 0 0;
+                                align-self: center;
+                            }
+
+                            .searchContainer {
+                                flex-direction: row;
+                                margin-bottom: 0;
+                            }
+
+                            .filterButton {
+                                display: inline-block;
+                            }
+
+                            .filtersSection.tagCheckboxes {
+                                padding-left: 0;
+                            }
+
+                            .collapsibleFilters {
+                                &.shownLg {
+                                    display: none;
+                                    flex-direction: row;
+                                }
+                                
+                                &.hiddenLg {
+                                    display: flex;
+                                    flex-direction: column;
+                                }
+                            
+                                .filtersSectionLabel {
+                                    display: none;
+                                }
+                            }
+                        }
                     }
                 
                     .resultsSection {
                         margin-left: 0;
+
+                        @media (max-height: 750px) {
+                            overflow: visible;
+                        }
                     }
                 }
             }
         }
-    }
-}
-
-.thumbnailContainer {
-    display: flex;
-    flex-direction: row;
-
-    .thumbnailWrapper {
-        width: 0px;
-        max-width: 0px;
-
-        &.visibleImage {
-            width: 150px;
-            max-width: 150px;
-        }
-    }
-
-    .thumbnail {
-        max-width: 100%;
-        max-height: 100%;
     }
 }

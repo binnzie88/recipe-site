@@ -13,7 +13,6 @@ import styles from '../styles/Recipe.module.scss';
 
 export const RecipePage = () => {
     const [recipe, setRecipe] = useState<RecipeInfo | undefined>(LoadingRecipe);
-    // TODO: add loading state, handle image loading better
     const [imageUrl, setImageUrl] = useState<string | undefined>(undefined);
     const { appStorage, recipes } = useContext(RecipesAndIngredientsContext);
 
@@ -21,17 +20,16 @@ export const RecipePage = () => {
         return (<h2>{"We could not load the recipe, please try again later."}</h2>);
     }, []);
 
-    // Get recipe from the server
     const location = useLocation();
     const recipeId = location.pathname.split("/")[2] ?? "";
-    if (recipeId.length < 1) {
+    if (recipeId === '') {
         return (
             <RecipeErrorPage errorContent={<h2>{"Select a recipe "}<Link to={`../recipes/`}>{"here"}</Link></h2>} />
         );
     }
 
     useEffect(() => {
-        if (recipes !== undefined) {
+        if (recipes !== undefined && recipes.length > 0) {
             const currentRecipe = recipes.find((r) => r.id === recipeId);
             setRecipe(currentRecipe);
             if (appStorage !== undefined) {
@@ -43,7 +41,7 @@ export const RecipePage = () => {
     if (recipe === undefined) {
         return (<RecipeErrorPage errorContent={recipeError} />);
     } else {
-        const {name, description, time, dietaryOptions, ingredients, steps, notes, tags} = recipe;
+        const {name, description, time} = recipe;
 
         // Display recipe page
         return (
@@ -51,7 +49,7 @@ export const RecipePage = () => {
                 <Header isScrollable={true} />
                 <div className={classNames(sharedStyles.pageContainer)} id="scroll-top-container">
                     <section className={classNames(sharedStyles.hero, styles.noPrint)}>
-                        <div className={sharedStyles.heroContainer}>
+                        <div className={classNames(sharedStyles.heroContainer, styles.summaryContainer)}>
                             <h3>
                                 Time Required: <strong>{time}</strong>
                             </h3>

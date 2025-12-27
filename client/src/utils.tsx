@@ -1,3 +1,4 @@
+import classNames from "classnames";
 import { CollectionReference, doc, DocumentData, setDoc } from "firebase/firestore";
 import { FirebaseStorage, getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import $ from "jquery";
@@ -22,9 +23,11 @@ import {
     SubIngredientOrStepInput,
     TagInputs,
     Tags,
+    NutritionStringItem,
 } from "./types";
 import { LoadingRecipeCard } from "./components/LoadingRecipeCard";
 import headerStyles from "./styles/Header.module.scss";
+import recipeStyles from "./styles/Recipe.module.scss";
 import recipeSearchStyles from "./styles/RecipeSearchPage.module.scss";
 
 /* ---------- General Site Utils ---------- */
@@ -159,7 +162,7 @@ export function getIngredientOrStepElements(
 ) {
     return items.reduce((filteredElements, item, idx) => {
         const itemForDietarySelection = getIngredientOrStepForDietarySelection(item, dietarySelection);
-        if (itemForDietarySelection !== 'remove') {
+        if (itemForDietarySelection !== '') {
             const itemIdxString = parentIdxString ? `${parentIdxString}-${idx}` : `${idx}`
             const itemKey = `${listKey}-${itemIdxString}`;
             if (item.subItems !== undefined && item.subItems.length !== 0) {
@@ -192,6 +195,69 @@ export function getIngredientOrStepElements(
         }
         return filteredElements;
     }, [] as JSX.Element[]);
+}
+
+export function getNutritionInfoElements(
+    nutritionInfo: DietaryNutritionInfo | undefined,
+    dietarySelection: DietarySelection,
+) {
+    if (nutritionInfo === undefined) {
+        return null;
+    }
+
+    const nutritionInfoSections: JSX.Element[] = [];
+
+    const servingInfoElement = getServingInfoElementForDietarySelection(nutritionInfo.servingSize, nutritionInfo.numServings, dietarySelection);
+
+    if (servingInfoElement !== null) {
+        nutritionInfoSections.push(servingInfoElement);
+    }
+
+    const nutritionMacroElements: JSX.Element[] = [];
+    const caloriesElement = getNutritionElementForDietarySelection(nutritionInfo.calories, dietarySelection, 'Calories');
+    const proteinElement = getNutritionElementForDietarySelection(nutritionInfo.proteinG, dietarySelection, 'Protein');
+    const fiberElement = getNutritionElementForDietarySelection(nutritionInfo.fiberG, dietarySelection, 'Fiber');
+    const fatElement = getNutritionElementForDietarySelection(nutritionInfo.fatG, dietarySelection, 'Fat');
+    const sodiumElement = getNutritionElementForDietarySelection(nutritionInfo.sodiumMg, dietarySelection, 'Sodium');
+    const sugarElement = getNutritionElementForDietarySelection(nutritionInfo.sugarG, dietarySelection, 'Sugar');
+
+    if (caloriesElement !== null) {
+        nutritionMacroElements.push(caloriesElement);
+    }
+    if (proteinElement !== null) {
+        nutritionMacroElements.push(proteinElement);
+    }
+    if (fiberElement !== null) {
+        nutritionMacroElements.push(fiberElement);
+    }
+    if (fatElement !== null) {
+        nutritionMacroElements.push(fatElement);
+    }
+    if (sodiumElement !== null) {
+        nutritionMacroElements.push(sodiumElement);
+    }
+    if (sugarElement !== null) {
+        nutritionMacroElements.push(sugarElement);
+    }
+
+    if (nutritionMacroElements.length > 0) {
+        nutritionInfoSections.push(
+            <div className={recipeStyles.nutritionInfoSection}>
+                {nutritionMacroElements}
+            </div>
+        );
+    }
+
+    if (nutritionInfoSections.length > 0) {
+        return (
+            <div className={classNames(recipeStyles.nutritionInfoContainer, recipeStyles.printable)}>
+                <h3>{`Nutrition Info`}</h3>
+                {nutritionInfoSections}
+            </div>
+        )
+    } else {
+        return null;
+    }
 }
 
 // TODO: UPDATE IMPLEMENTATION?
@@ -646,6 +712,117 @@ function getFormattedNutritionItem(nutritionItem: NutritionItemInput, dietaryOpt
         formattedNutritionItem.vegetarian = nutritionItem.vegetarian;
     }
     return formattedNutritionItem;
+}
+
+function buildServingInfoElement(servingSize: string | undefined, numServings: number | undefined) {
+    if (servingSize === undefined && numServings === undefined) {
+        return null;
+    }
+    return (
+        <div className={recipeStyles.nutritionInfoSection}>
+            {numServings !== undefined && (
+                <div className={recipeStyles.nutritionItem}>
+                    <div className={recipeStyles.nutritionLabel}>{`Number of Servings: `}</div>
+                    <div>{numServings}</div>
+                </div>
+            )}
+            {servingSize !== undefined && (
+                <div className={recipeStyles.nutritionItem}>
+                    <div className={recipeStyles.nutritionLabel}>{`Serving Size: `}</div>
+                    <div>{servingSize}</div>
+                </div>
+            )}
+        </div>
+    );
+}
+
+function getServingInfoElementForDietarySelection(
+    servingSize: NutritionStringItem | undefined,
+    numServings: NutritionItem | undefined,
+    dietarySelection: DietarySelection
+) {
+    if (servingSize === undefined && numServings === undefined) {
+        return null;
+    }
+    
+    switch (dietarySelection) {
+        case DietarySelection.Original:
+            return buildServingInfoElement(
+                servingSize?.original,
+                numServings?.original,
+            );
+        case DietarySelection.GlutenFree:
+            return buildServingInfoElement(
+                servingSize?.glutenFree ?? servingSize?.original,
+                numServings?.glutenFree ?? numServings?.original,
+            );
+        case DietarySelection.Vegan:
+            return buildServingInfoElement(
+                servingSize?.vegan ?? servingSize?.original,
+                numServings?.vegan ?? numServings?.original,
+            );
+        case DietarySelection.Vegetarian:
+            return buildServingInfoElement(
+                servingSize?.vegetarian ?? servingSize?.original,
+                numServings?.vegetarian ?? numServings?.original,
+            );
+        default:
+            return null;
+    }
+}
+
+function buildNutritionElement(label: string, nutritionItem: number | undefined) {
+    if (nutritionItem === undefined) {
+        return null;
+    }
+    return (
+        <div className={recipeStyles.nutritionItem}>
+            <div className={recipeStyles.nutritionLabel}>{`${label}: `}</div>
+            <div>{nutritionItem}</div>
+        </div>
+    );
+}
+
+function getNutritionElementForDietarySelection(
+    nutritionItem: NutritionItem | undefined,
+    dietarySelection: DietarySelection,
+    label: string
+) {
+    if (
+        nutritionItem === undefined || (
+            nutritionItem.original === undefined
+            && nutritionItem.glutenFree === undefined
+            && nutritionItem.vegan === undefined
+            && nutritionItem.vegetarian === undefined
+        )
+    ) {
+        return null;
+    }
+
+    switch (dietarySelection) {
+        case DietarySelection.Original:
+            return nutritionItem.original ? buildNutritionElement(label, nutritionItem.original) : null;
+        case DietarySelection.GlutenFree:
+            return (
+                nutritionItem.glutenFree !== undefined
+                    ? buildNutritionElement(label, nutritionItem.glutenFree)
+                    : buildNutritionElement(label, nutritionItem.original)
+            );
+        case DietarySelection.Vegan:
+            return (
+                nutritionItem.vegan !== undefined
+                    ? buildNutritionElement(label, nutritionItem.vegan)
+                    : buildNutritionElement(label, nutritionItem.original)
+            );
+        case DietarySelection.Vegetarian:
+            return (
+                nutritionItem.vegetarian !== undefined
+                    ? buildNutritionElement(label, nutritionItem.vegetarian)
+                    : buildNutritionElement(label, nutritionItem.original)
+            );
+        default:
+            return null;
+    }
 }
 
 // TODO: figure out a way to get this working to allow links in recipe steps/ingredients

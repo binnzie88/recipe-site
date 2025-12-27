@@ -69,6 +69,13 @@ export type NutritionItem = {
     vegetarian?: number;
 }
 
+export type NutritionStringItem = {
+    original?: string;
+    glutenFree?: string;
+    vegan?: string;
+    vegetarian?: string;
+}
+
 export enum NutritionItemTypes {
     Calories = 'calories',
     ProteinG = 'proteinG',
@@ -94,6 +101,8 @@ export type DietaryNutritionInfo = {
     fatG?: NutritionItem;
     sodiumMg?: NutritionItem;
     sugarG?: NutritionItem;
+    numServings?: NutritionItem;
+    servingSize?: NutritionStringItem;
 }
 
 /* Recipe and Ingredient Props */

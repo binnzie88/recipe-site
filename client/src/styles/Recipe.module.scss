@@ -12,6 +12,21 @@
         overflow: hidden;
 
         .entryContent {
+            display: flex;
+            flex-direction: row;
+
+            .leftColumn {
+                min-width: 40%;
+            }
+
+            .rightColumn {
+                display: flex;
+                flex-direction: column;
+                justify-content: space-between;
+                padding: 20px 20px 0 20px;
+                min-width: 60%;
+            }
+
             button {
                 border: 1px solid #ede9e9;
                 color: #8e767a;
@@ -36,10 +51,6 @@
                 color: #fff;
             }
 
-            .mainColumnContent {
-                padding-bottom: 45px;
-            }
-
             .printButtons {
                 width: 100%;
                 display: flex;
@@ -54,25 +65,63 @@
                     }
                 }
             }
-  
-            .notes {
-                font-size: 14px;
-                font-style: italic;
-                margin: 10px 0px 10px 10px;
-                padding: 10px;
 
-                &.stackedNotes {
-                    margin: 0 0 45px 0;
-                    padding: 0 10px;
+            .nutritionInfoSection {
+                border: 2px solid var(--secondary-color);
+                border-radius: 4px;
+
+                padding: 10px;
+                margin-bottom: 10px;
+            }
+
+            .leftContent {
+                display: block;
+
+                .notes {
+                    margin: 10px 0 0 10px;
+                    padding: 10px;
+
+                    .notesEntry {
+                        font-style: italic;
+                    }
+                }
+
+                .nutritionInfoContainer {
+                    margin: 0 0 10px 10px;
+                    padding: 0 10px 10px 10px;
                 }
             }
 
-            :global(.col-12), :global(.col-md-5) {
-                padding: 0;
+            .stackedLeftContent {
+                display: none;
+
+                .notes {
+                    margin: 0;
+                    padding: 0;
+
+                    .notesEntry {
+                        margin-left: 22px;
+                    }
+                }
+
+                .nutritionInfoContainer {
+                    margin: 0;
+                    padding: 0;
+
+                    .nutritionInfoSection {
+                        margin-left: 22px;
+                    }
+                }
             }
 
-            :global(.col-md-7) {
-                padding: 10px;
+            .nutritionItem {
+                display: flex;
+                flex-direction: row;
+                gap: 5px;
+
+                .nutritionLabel {
+                    font-weight: 600;
+                }
             }
 
             h3 {
@@ -92,11 +141,26 @@
                 margin-top: 30px;
                 padding-bottom: 10px;
                 padding-top: 10px;
-                position: absolute;
                 width: 100%;
+            }
+
+            @media (max-width : 768px) {
+                flex-direction: column;
+
+                .leftContent {
+                    display: none;
+                }
+    
+                .stackedLeftContent {
+                    display: block;
+                }
             }
         }
     }
+}
+
+.summaryContainer {
+    padding: 0 20px;
 }
 
 /* ---------- Back to Top button ---------- */
@@ -122,7 +186,7 @@
         height: 40px;
         border-style: solid;
         border-color: #cbac80;
-        color: #fff;
+        color: #cbac80;
         transition: all 0.25s;
     }
 }
@@ -149,11 +213,6 @@
         visibility: visible;
         color: #000000;
         font-style: normal;
-    }
-
-    :global(.col-md-7), :global(.col-md-6) {
-        min-width: 100%;
-        width: 100%;
     }
 }
 

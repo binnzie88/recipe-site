@@ -52,7 +52,7 @@ export const RecipeCard = ({ recipe }: { recipe: RecipeInfo }) => {
         <div className={styles.recipeCardContainer}>
             <div className={classNames(styles.entryContainer)}>
                 <article className={styles.entry}>
-                    <div className={classNames(styles.thumbnailContainer, styles.imageContainer)}>
+                    <div className={styles.thumbnailContainer}>
                         <Link className={classNames(styles.thumbnailWrapper, {[styles.visibleImage]: !showPlaceholderThumbnail})} to={recipeUrl}>
                             {thumbnail}
                         </Link>
