@@ -241,6 +241,10 @@ export function getNutritionInfoElements(
     }
 
     if (nutritionMacroElements.length > 0) {
+        if (nutritionInfoSections.length > 0) {
+            // Add divider between serving info and macros
+            nutritionInfoSections.push(<div className={recipeStyles.nutritionInfoDivider} />);
+        }
         nutritionInfoSections.push(
             <div className={recipeStyles.nutritionInfoSection}>
                 {nutritionMacroElements}
