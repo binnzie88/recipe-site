@@ -1,6 +1,6 @@
 import classNames from 'classnames';
-import React from 'react';
-import { smoothScrollDown } from '../utils';
+import React, { useEffect, useState } from 'react';
+import { setBackgroundWhenLoaded, smoothScrollDown } from '../utils';
 import { CategoryCard } from './CategoryCard';
 import { Header } from './Header';
 import { Footer } from './Footer';
@@ -8,10 +8,15 @@ import sharedStyles from '../styles/CommonStyles.module.scss';
 import styles from '../styles/Home.module.scss';
 
 export const Home = () => {
+    const [isBackgroundLoaded, setIsBackgroundLoaded] = useState(false);
+    useEffect(() => {
+        setBackgroundWhenLoaded(setIsBackgroundLoaded);
+    }, [setIsBackgroundLoaded]);
+
     return (
         <React.Fragment>
             <Header isScrollable={true} />
-            <div className={sharedStyles.pageContainer}  id="scroll-top-container">
+            <div className={classNames(sharedStyles.pageContainer, {[sharedStyles.withBackgroundImage]: isBackgroundLoaded})}  id="scroll-top-container">
                 <div className={classNames(styles.section, sharedStyles.hero)}>
                     <div className={sharedStyles.heroContainer}>
                         <h3>{"Welcome"}</h3>

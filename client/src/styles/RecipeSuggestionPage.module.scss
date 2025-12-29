@@ -100,7 +100,8 @@
                     max-width: 1800px;
         
                     .recipeFormContainer {
-                        padding: 15px 0 15px 0;
+                        padding: 15px 0;
+                        margin: 0 30px;
                         background-color: #ecd9be;
                         color: #525252;
                         min-height: 300px;
@@ -239,7 +240,7 @@
     display: flex;
     flex-direction: column;
     gap: 20px;
-    margin: 0 20px;
+    margin: 0 35px;
 
     .recipeInputLabel {
         font-size: 18px;

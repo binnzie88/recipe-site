@@ -34,6 +34,7 @@ import {
     getFormattedIngredientsOrSteps,
     getFormattedNutritionInfo,
     getFormattedTags,
+    setBackgroundWhenLoaded,
     submitRecipe,
 } from '../utils';
 import { Header } from './Header';
@@ -47,6 +48,11 @@ export const RecipeSuggestionPage = () => {
     const [sourceImageBlob, setSourceImageBlob] = useState<Blob | undefined>();
     const [thumbnailImageBlob, setThumbnailImageBlob] = useState<Blob | undefined>();
     const [isThumbnailEditDialogOpen, setIsThumbnailEditDialogOpen] = useState<boolean>(false);
+    const [isBackgroundLoaded, setIsBackgroundLoaded] = useState(false);
+
+    useEffect(() => {
+        setBackgroundWhenLoaded(setIsBackgroundLoaded);
+    }, [setIsBackgroundLoaded]);
     
     const {
         control,
@@ -414,38 +420,26 @@ export const RecipeSuggestionPage = () => {
     return (
         <div className={styles.inputPageTop}>
             <Header isScrollable={false} />
-            <main className={classNames(sharedStyles.pageContainer, styles.inputPageContainer)}>
+            <main className={classNames(sharedStyles.pageContainer, styles.inputPageContainer, {[sharedStyles.withBackgroundImage]: isBackgroundLoaded})}>
                 <SubmitOverlay />
                 <div className={styles.inputPageBackground}>
                     <section className={styles.suggestionSection}>
-                        <div className={classNames(styles.suggestionContainer, "container")}>
-                            <div className="row">
-                                <div className="col-12">
-                                    <div className={styles.recipeFormContainer}>
-                                        <h3>{"Suggest a Recipe"}</h3>
-                                        <p>
-                                            {"Thank you for your interest in suggesting a recipe! Please fill out the form below to suggest "}
-                                            {"a new recipe. The recipes in the Recipes list are curated recipes I personally stand by. "}
-                                            {"To keep that true, I will test out any suggested recipes, and if it is something I love and "}
-                                            {"will make again, I'll add it to the Recipes list (and credit you, of course)! Otherwise, I "}
-                                            {"will hold onto it to add to an upcoming Community Recipes section of the website."}<br/><br/>
-                                            {"Clicking the Submit button will open a prompt to copy a formatted representation of your "}
-                                            {"submission. Please copy that text and send it as-is to ebinns88@gmail.com. If you want to "}
-                                            {"include a specific image for your recipe, please add it as an attachment to the email you "}
-                                            {"send. Otherwise I'll try the recipe out as soon as I can and take a photo myself!"}
-                                        </p>
-                                        <div className="row">
-                                            <div className="col-12">
-                                                <div className={styles.inputContainer}>
-                                                    <div className="row">
-                                                        <div className="col-12">
-                                                            {recipeSubmitForm}
-                                                        </div>
-                                                    </div><br/>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
+                        <div className={styles.suggestionContainer}>
+                            <div className={styles.recipeFormContainer}>
+                                <h3>{"Suggest a Recipe"}</h3>
+                                <p>
+                                    {"Thank you for your interest in suggesting a recipe! Please fill out the form below to suggest "}
+                                    {"a new recipe. The recipes in the Recipes list are curated recipes I personally stand by. "}
+                                    {"To keep that true, I will test out any suggested recipes, and if it is something I love and "}
+                                    {"will make again, I'll add it to the Recipes list (and credit you, of course)! Otherwise, I "}
+                                    {"will hold onto it to add to an upcoming Community Recipes section of the website."}<br/><br/>
+                                    {"Clicking the Submit button will open a prompt to copy a formatted representation of your "}
+                                    {"submission. Please copy that text and send it as-is to ebinns88@gmail.com. If you want to "}
+                                    {"include a specific image for your recipe, please add it as an attachment to the email you "}
+                                    {"send. Otherwise I'll try the recipe out as soon as I can and take a photo myself!"}
+                                </p>
+                                <div className={styles.inputContainer}>
+                                    {recipeSubmitForm}
                                 </div>
                             </div>
                         </div>

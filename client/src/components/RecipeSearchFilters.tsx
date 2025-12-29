@@ -119,7 +119,7 @@ export const RecipeSearchFilters = ({
                         <button type="submit" onClick={updateSearchTermCallback}><i className="material-icons">search</i></button>
                     </div>
                     <button
-                        className={classNames(styles.filterButton, "btn", "btn-primary")}
+                        className={styles.filterButton}
                         onClick={toggleFiltersSection}
                     >
                         {"Filters"}

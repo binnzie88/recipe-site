@@ -3,7 +3,7 @@ import React, { useContext, useEffect, useMemo, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { LoadingRecipe } from '../consts';
 import { RecipeInfo, RecipesAndIngredientsContext } from '../types';
-import { getImageUrl, navBackToTop, smoothScrollDown } from '../utils';
+import { getImageUrl, navBackToTop, setBackgroundWhenLoaded, smoothScrollDown } from '../utils';
 import { Header } from './Header';
 import { Footer } from './Footer';
 import { Recipe } from './Recipe';
@@ -14,7 +14,12 @@ import styles from '../styles/Recipe.module.scss';
 export const RecipePage = () => {
     const [recipe, setRecipe] = useState<RecipeInfo | undefined>(LoadingRecipe);
     const [imageUrl, setImageUrl] = useState<string | undefined>(undefined);
+    const [isBackgroundLoaded, setIsBackgroundLoaded] = useState(false);
     const { appStorage, recipes } = useContext(RecipesAndIngredientsContext);
+
+    useEffect(() => {
+        setBackgroundWhenLoaded(setIsBackgroundLoaded);
+    }, [setIsBackgroundLoaded]);
 
     const recipeError = useMemo(() => {
         return (<h2>{"We could not load the recipe, please try again later."}</h2>);
@@ -47,7 +52,7 @@ export const RecipePage = () => {
         return (
             <React.Fragment>
                 <Header isScrollable={true} />
-                <div className={classNames(sharedStyles.pageContainer)} id="scroll-top-container">
+                <div className={classNames(sharedStyles.pageContainer, {[sharedStyles.withBackgroundImage]: isBackgroundLoaded})} id="scroll-top-container">
                     <section className={classNames(sharedStyles.hero, styles.noPrint)}>
                         <div className={classNames(sharedStyles.heroContainer, styles.summaryContainer)}>
                             <h3>

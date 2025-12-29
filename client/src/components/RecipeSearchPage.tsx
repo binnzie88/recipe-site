@@ -3,7 +3,8 @@ import { useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import { DietarySelection, DifficultyTags, RecipeTypeTags, RecipesAndIngredientsContext } from '../types';
 import {
   getLoadingRecipeCards,
-  isRecipeVisibleWithSelectedTags
+  isRecipeVisibleWithSelectedTags,
+  setBackgroundWhenLoaded
 } from '../utils';
 import { Header } from './Header';
 import { Footer } from './Footer';
@@ -17,6 +18,11 @@ export const RecipeSearchPage = () => {
     const [selectedDifficultyTags, setSelectedDifficultyTags] = useState<DifficultyTags[]>([]);
     const [selectedRecipeTypeTags, setSelectedRecipeTypeTags] = useState<RecipeTypeTags[]>([]);
     const [searchTerm, setSearchTerm] = useState<string>("");
+    const [isBackgroundLoaded, setIsBackgroundLoaded] = useState(false);
+
+    useEffect(() => {
+        setBackgroundWhenLoaded(setIsBackgroundLoaded);
+    }, [setIsBackgroundLoaded]);
 
     // Display loading states for recipe cards
     const loadingCards = useMemo(() => getLoadingRecipeCards(), []);
@@ -90,7 +96,7 @@ export const RecipeSearchPage = () => {
     return (
         <div className={styles.recipeSearchPageTop}>
             <Header isScrollable={false} />
-            <main className={classNames(sharedStyles.pageContainer, styles.searchPageContainer)}>
+            <main className={classNames(sharedStyles.pageContainer, styles.searchPageContainer, {[sharedStyles.withBackgroundImage]: isBackgroundLoaded})}>
                 <div className={styles.recipesPageBackground}>
                     <section className={styles.recipes}>
                         <div className={classNames(

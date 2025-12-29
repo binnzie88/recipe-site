@@ -28,7 +28,6 @@ import {
 import { LoadingRecipeCard } from "./components/LoadingRecipeCard";
 import headerStyles from "./styles/Header.module.scss";
 import recipeStyles from "./styles/Recipe.module.scss";
-import recipeSearchStyles from "./styles/RecipeSearchPage.module.scss";
 
 /* ---------- General Site Utils ---------- */
 
@@ -71,6 +70,32 @@ export function smoothScrollDown(e: React.MouseEvent<HTMLElement>, targetId: str
             scrollTop: scrollto
         }, 1250, 'easeInOutExpo');
     }
+}
+
+export async function setBackgroundWhenLoaded(onImageLoaded: (success: boolean) => void) {
+    try {
+        console.log("TRYING");
+        await loadBackgroundImage();
+        console.log("SETTING BACKGROUND IMAGE");
+        onImageLoaded(true);
+    } catch (error) {
+        console.error("Error loading background image: ", error);
+    }
+}
+
+function loadBackgroundImage(): Promise<void> {
+    return new Promise((resolve, reject) => {
+        const img = new Image();
+        img.src = require('./img/background.jpeg');
+
+        img.onload = () => resolve();
+        img.onerror = (error) => reject(error);
+
+        // Resolve if image is cached
+        if (img.complete) {
+            resolve();
+        }
+    });
 }
 
 /* ------- Data Fetch Utils --------------- */
@@ -264,7 +289,7 @@ export function getNutritionInfoElements(
     }
 }
 
-// TODO: UPDATE IMPLEMENTATION?
+// TODO: investigate cleaner strategies for this ingredient copy functionality
 export function getIngredients() {
     var ingredients = document.getElementById('ingredient-list')?.innerText;
     var tmp = document.createElement('textarea');
